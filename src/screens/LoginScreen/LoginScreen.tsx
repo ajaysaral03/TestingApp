@@ -213,7 +213,7 @@ const handleGetOTP = async () => {
     showAlert(
       'error',
       'Something Went Wrong',
-      error.message || 'Please try  again.',
+      error.message || 'Please try again.',
     );
   } finally {
     setLoading(false);
