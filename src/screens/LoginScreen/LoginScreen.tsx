@@ -6,430 +6,313 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  Animated,
   StatusBar,
   KeyboardAvoidingView,
-  Platform,
   ScrollView,
-  Animated,
-  Modal,
-  Pressable,
-  Image,
+  Platform,
   ActivityIndicator,
 } from 'react-native';
 
 import {
-  Smartphone,
+  Wallet,
+  Phone,
   ArrowRight,
   ShieldCheck,
-  X,
-  Check,
-  AlertCircle,
-  Droplets,
-  Milk,
-  Truck,
   Sparkles,
+  TrendingUp,
+  X,
 } from 'lucide-react-native';
+
+import SweetAlert from '../../components/SweetAlert/SweetAlert';
+
+import { sendLoginOtp } from '../../services/authService';
 
 import { styles } from './LoginScreen.styles';
 
-import {
-  sendLoginOtp,
-} from '../../services/authService';
+import { COLORS } from '../../constants/colors';
 
-type AlertType = 'success' | 'error';
+import { FONTS } from '../../constants/fonts';
+
+type AlertType = {
+  show: boolean;
+  title: string;
+  message: string;
+  confirmText: string;
+  onConfirm?: () => void;
+};
 
 const LoginScreen = ({ navigation }: any) => {
-
   const [mobile, setMobile] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
-  const [alertVisible, setAlertVisible] = useState(false);
-  const [alertType, setAlertType] = useState<AlertType>('error');
-  const [alertTitle, setAlertTitle] = useState('');
-  const [alertMessage, setAlertMessage] = useState('');
+  const [alertData, setAlertData] = useState<AlertType>({
+    show: false,
+    title: '',
+    message: '',
+    confirmText: 'OK',
+  });
 
-  const screenOpacity = useRef(new Animated.Value(0)).current;
-  const screenTranslate = useRef(new Animated.Value(25)).current;
-
-  const logoScale = useRef(new Animated.Value(0.8)).current;
-  const logoPulse = useRef(new Animated.Value(1)).current;
-
-  const buttonScale = useRef(new Animated.Value(1)).current;
-
-  const floatOne = useRef(new Animated.Value(0)).current;
-  const floatTwo = useRef(new Animated.Value(0)).current;
-  const floatThree = useRef(new Animated.Value(0)).current;
-
-  const modalScale = useRef(new Animated.Value(0.8)).current;
-  const modalOpacity = useRef(new Animated.Value(0)).current;
-
-  // Screen Animation
+  // Animations
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(35)).current;
+  const logoScale = useRef(new Animated.Value(0.7)).current;
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const rotateAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-
-    const entrance = Animated.parallel([
-      Animated.timing(screenOpacity, {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 600,
+        duration: 900,
         useNativeDriver: true,
       }),
 
-      Animated.timing(screenTranslate, {
+      Animated.timing(translateY, {
         toValue: 0,
-        duration: 600,
+        duration: 900,
         useNativeDriver: true,
       }),
 
       Animated.spring(logoScale, {
         toValue: 1,
         friction: 5,
-        tension: 70,
+        tension: 45,
         useNativeDriver: true,
       }),
-    ]);
+    ]).start();
 
-    entrance.start();
-
-    const pulseAnimation = Animated.loop(
+    const pulse = Animated.loop(
       Animated.sequence([
-        Animated.timing(logoPulse, {
-          toValue: 1.04,
-          duration: 1000,
+        Animated.timing(pulseAnim, {
+          toValue: 1.045,
+          duration: 1300,
           useNativeDriver: true,
         }),
-
-        Animated.timing(logoPulse, {
+        Animated.timing(pulseAnim, {
           toValue: 1,
-          duration: 1000,
+          duration: 1300,
           useNativeDriver: true,
         }),
       ]),
     );
 
-    const createFloat = (value: Animated.Value, duration: number) =>
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(value, {
-            toValue: 1,
-            duration,
-            useNativeDriver: true,
-          }),
+    const rotate = Animated.loop(
+      Animated.timing(rotateAnim, {
+        toValue: 1,
+        duration: 18000,
+        useNativeDriver: true,
+      }),
+    );
 
-          Animated.timing(value, {
-            toValue: 0,
-            duration,
-            useNativeDriver: true,
-          }),
-        ]),
-      );
-
-    const animations = [
-      pulseAnimation,
-      createFloat(floatOne, 1300),
-      createFloat(floatTwo, 1600),
-      createFloat(floatThree, 1400),
-    ];
-
-    animations.forEach(animation => animation.start());
+    pulse.start();
+    rotate.start();
 
     return () => {
-      entrance.stop();
-      animations.forEach(animation => animation.stop());
+      pulse.stop();
+      rotate.stop();
     };
+  }, [fadeAnim, translateY, logoScale, pulseAnim, rotateAnim]);
 
-  }, []);
+  const rotateInterpolate = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
 
-  // Alert Animation
+  // SweetAlert helper
+  const showSweetAlert = (
+    title: string,
+    message: string,
+    confirmText = 'OK',
+    onConfirm?: () => void,
+  ) => {
+    setAlertData({
+      show: true,
+      title,
+      message,
+      confirmText,
+      onConfirm,
+    });
+  };
 
-  useEffect(() => {
+  const closeSweetAlert = () => {
+    setAlertData(prev => ({
+      ...prev,
+      show: false,
+    }));
+  };
 
-    if (!alertVisible) {
+  const handleAlertConfirm = () => {
+    const callback = alertData.onConfirm;
+
+    closeSweetAlert();
+
+    if (callback) {
+      callback();
+    }
+  };
+
+  // Get OTP
+  const handleGetOTP = async () => {
+    const number = mobile.replace(/\D/g, '');
+
+    if (!/^[6-9]\d{9}$/.test(number)) {
+      showSweetAlert(
+        'Invalid Mobile Number',
+        'Please enter a valid 10-digit Indian mobile number.',
+      );
       return;
     }
 
-    modalScale.setValue(0.8);
-    modalOpacity.setValue(0);
+    try {
+      setLoading(true);
 
-    Animated.parallel([
-      Animated.spring(modalScale, {
-        toValue: 1,
-        friction: 6,
-        tension: 90,
-        useNativeDriver: true,
-      }),
+      const response = await sendLoginOtp(number);
 
-      Animated.timing(modalOpacity, {
-        toValue: 1,
-        duration: 220,
-        useNativeDriver: true,
-      }),
-    ]).start();
-
-  }, [alertVisible]);
-
-  // Show Alert
-
-  const showAlert = (
-    type: AlertType,
-    title: string,
-    message: string,
-  ) => {
-    setAlertType(type);
-    setAlertTitle(title);
-    setAlertMessage(message);
-    setAlertVisible(true);
-  };
-
-  const closeAlert = () => {
-    setAlertVisible(false);
-  };
-
-  // Get OTP API using Fetch service
-const handleGetOTP = async () => {
-  const cleanMobile = mobile.replace(/\D/g, '');
-
-  if (!/^[6-9][0-9]{9}$/.test(cleanMobile)) {
-    showAlert(
-      'error',
-      'Invalid Mobile Number',
-      'Please enter a valid 10-digit number starting with 6, 7, 8 or 9.',
-    );
-    return;
-  }
-
-  try {
-    setLoading(true);
-
-    const response = await sendLoginOtp(cleanMobile);
-
-    if (response.success) {
-      showAlert(
-        'success',
-        'OTP Generated Successfully',
-        `Your Demo OTP is ${response.otp}`,
+      showSweetAlert(
+        'OTP Sent Successfully!',
+        `Your demo OTP is ${response.otp}. Please use it to continue.`,
+        'Continue',
+        () => {
+          navigation.navigate('OtpVerification', {
+            mobile: number,
+          });
+        },
       );
+    } catch (error: any) {
+      showSweetAlert(
+        'OTP Failed',
+        error?.message || 'Something went wrong. Please try again.',
+      );
+    } finally {
+      setLoading(false);
     }
-  } catch (error: any) {
-    showAlert(
-      'error',
-      'Something Went Wrong',
-      error.message || 'Please try again.',
-    );
-  } finally {
-    setLoading(false);
-  }
-};
-
-  // Continue to OTP Screen only after successful API response
-  const handleContinue = () => {
-    setAlertVisible(false);
-
-    navigation.navigate('OtpVerification', {
-      mobile,
-    });
   };
-
-  // Button Animation
-
-  const handlePressIn = () => {
-
-    Animated.spring(buttonScale, {
-      toValue: 0.96,
-      useNativeDriver: true,
-    }).start();
-
-  };
-
-  const handlePressOut = () => {
-
-    Animated.spring(buttonScale, {
-      toValue: 1,
-      friction: 4,
-      useNativeDriver: true,
-    }).start();
-
-  };
-
-  const isSuccess = alertType === 'success';
-
-  const floatY = (value: Animated.Value) =>
-    value.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, -10],
-    });
 
   return (
-
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-
       <StatusBar
         barStyle="dark-content"
-        backgroundColor="#F8FCFF"
+        backgroundColor={COLORS.background}
       />
+
+      {/* Background Design */}
+      <Animated.View
+        style={[
+          styles.backgroundCircleLarge,
+          { transform: [{ rotate: rotateInterpolate }] },
+        ]}
+      />
+
+      <View style={styles.backgroundCircleSmall} />
+      <View style={styles.backgroundDotOne} />
+      <View style={styles.backgroundDotTwo} />
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
-
         <Animated.View
           style={[
-            styles.page,
+            styles.mainContent,
             {
-              opacity: screenOpacity,
-              transform: [{ translateY: screenTranslate }],
+              opacity: fadeAnim,
+              transform: [{ translateY }],
             },
           ]}
         >
-
-          {/* Background */}
-
-          <View style={styles.backgroundCircleOne} />
-          <View style={styles.backgroundCircleTwo} />
-
           {/* Brand */}
-
-          <View style={styles.brandRow}>
-
+          <View style={styles.topBrand}>
             <View style={styles.brandIcon}>
-              <Droplets
-                size={24}
-                color="#229BD5"
+              <Wallet
+                size={25}
+                color="#FFFFFF"
+                strokeWidth={2.5}
               />
             </View>
 
             <Text style={styles.brandText}>
-              Milk
-              <Text style={styles.brandGreen}>Mate</Text>
+              Expense
+              <Text style={styles.brandGreen}>Tracker</Text>
             </Text>
 
-            <Sparkles
-              size={17}
-              color="#35A9D6"
-            />
-
+            <Sparkles size={17} color="#35A96B" />
           </View>
 
           <Text style={styles.brandTagline}>
-            YOUR MILK BUSINESS PARTNER
+            SMART MONEY MANAGEMENT
           </Text>
 
-          {/* Milk Delivery Logo */}
-
-          <View style={styles.hero}>
-
-            <Animated.View
-              style={[
-                styles.floatingIcon,
-                {
-                  left: 12,
-                  top: 20,
-                  transform: [{ translateY: floatY(floatOne) }],
-                },
-              ]}
-            >
-              <Milk size={24} color="#299ED5" />
-            </Animated.View>
-
-            <Animated.View
-              style={[
-                styles.floatingIcon,
-                {
-                  right: 12,
-                  top: 20,
-                  transform: [{ translateY: floatY(floatTwo) }],
-                },
-              ]}
-            >
-              <Truck size={24} color="#28A65A" />
-            </Animated.View>
-
-            <Animated.View
-              style={[
-                styles.floatingIcon,
-                {
-                  right: 15,
-                  bottom: 18,
-                  transform: [{ translateY: floatY(floatThree) }],
-                },
-              ]}
-            >
-              <Droplets size={23} color="#299ED5" />
-            </Animated.View>
-
-            <Animated.View
-              style={[
-                styles.heroOuterCircle,
-                {
-                  transform: [
-                    { scale: logoScale },
-                    { scale: logoPulse },
-                  ],
-                },
-              ]}
-            >
-
-              <View style={styles.heroMiddleCircle}>
-
-                <View style={styles.heroInnerCircle}>
-
-                  <Image
-                    source={require('../../assets/images/download.png')}
-                    style={styles.deliveryImage}
-                    resizeMode="contain"
+          {/* Animated Wallet Logo */}
+          <Animated.View
+            style={[
+              styles.logoWrapper,
+              {
+                opacity: fadeAnim,
+                transform: [
+                  { scale: logoScale },
+                  { scale: pulseAnim },
+                ],
+              },
+            ]}
+          >
+            <View style={styles.logoOuterCircle}>
+              <View style={styles.logoMiddleCircle}>
+                <View style={styles.logoInnerCircle}>
+                  <Wallet
+                    size={100}
+                    color="#229B67"
+                    strokeWidth={1.7}
                   />
 
+                  <View style={styles.walletBadge}>
+                    <TrendingUp
+                      size={25}
+                      color="#FFFFFF"
+                      strokeWidth={2.5}
+                    />
+                  </View>
                 </View>
-
               </View>
-
-            </Animated.View>
-
-          </View>
+            </View>
+          </Animated.View>
 
           {/* Heading */}
-
           <View style={styles.heading}>
-
-            <Text style={styles.eyebrow}>
-              WELCOME TO MILKMATE
-            </Text>
-
             <Text style={styles.title}>
-              Fresh Milk
+              Welcome Back!
             </Text>
 
             <Text style={styles.titleGreen}>
-              Delivered Daily!
+              Manage Your Money
             </Text>
 
             <Text style={styles.subtitle}>
-              Manage your milk business easily
+              Login with your mobile number to track
               {'\n'}
-              with MilkMate.
+              your income and expenses.
             </Text>
-
           </View>
 
           {/* Login Form */}
-
           <View style={styles.form}>
-
             <Text style={styles.label}>
-              Enter Your Mobile Number
+              Mobile Number
             </Text>
 
-            <View style={styles.phoneInput}>
-
+            <View
+              style={[
+                styles.phoneInput,
+                isFocused && styles.phoneInputFocused,
+              ]}
+            >
               <View style={styles.phoneIcon}>
-                <Smartphone
-                  size={21}
-                  color="#299ED5"
-                />
+                <Phone size={19} color="#239D64" />
               </View>
 
               <Text style={styles.countryCode}>
@@ -440,226 +323,91 @@ const handleGetOTP = async () => {
 
               <TextInput
                 style={styles.input}
-                placeholder="10-digit mobile number"
-                placeholderTextColor="#AAB5C0"
+                placeholder="Enter mobile number"
+                placeholderTextColor="#A2B0A7"
                 keyboardType="number-pad"
                 maxLength={10}
                 value={mobile}
-                onChangeText={text =>
-                  setMobile(text.replace(/\D/g, '').slice(0, 10))
+                onChangeText={value =>
+                  setMobile(
+                    value.replace(/\D/g, '').slice(0, 10),
+                  )
                 }
-                returnKeyType="done"
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
               />
 
               {mobile.length === 10 && (
-                <Check
+                <ShieldCheck
                   size={21}
-                  color="#28A65A"
+                  color="#239D64"
                 />
               )}
-
             </View>
 
             <Text style={styles.helperText}>
-              We will send a 4-digit OTP to verify your number.
+              Enter your 10-digit mobile number.
             </Text>
 
-            {/* Continue Button */}
-
-            <Animated.View
-              style={{
-                transform: [{ scale: buttonScale }],
-              }}
+            {/* Get OTP Button */}
+            <TouchableOpacity
+              activeOpacity={0.85}
+              style={[
+                styles.button,
+                loading && styles.buttonDisabled,
+              ]}
+              onPress={handleGetOTP}
+              disabled={loading}
             >
+              {loading ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <>
+                  <Text style={styles.buttonText}>
+                    Get OTP
+                  </Text>
 
-              <TouchableOpacity
-                style={[
-                  styles.button,
-                  loading && styles.buttonDisabled,
-                ]}
-                activeOpacity={0.9}
-                onPress={handleGetOTP}
-                onPressIn={handlePressIn}
-                onPressOut={handlePressOut}
-                disabled={loading}
-              >
+                  <View style={styles.buttonArrow}>
+                    <ArrowRight
+                      size={23}
+                      color="#239D64"
+                      strokeWidth={2.5}
+                    />
+                  </View>
+                </>
+              )}
+            </TouchableOpacity>
+          </View>
 
-                {loading ? (
+          {/* Security */}
+          <View style={styles.secureRow}>
+            <ShieldCheck size={16} color="#239D64" />
 
-                  <ActivityIndicator color="#FFFFFF" />
-
-                ) : (
-
-                  <>
-                    <Text style={styles.buttonText}>
-                      Get OTP
-                    </Text>
-
-                    <View style={styles.buttonArrow}>
-                      <ArrowRight
-                        size={21}
-                        color="#239B68"
-                      />
-                    </View>
-                  </>
-
-                )}
-
-              </TouchableOpacity>
-
-            </Animated.View>
-
-            {/* Security */}
-
-            <View style={styles.secureRow}>
-
-              <ShieldCheck
-                size={18}
-                color="#28A65A"
-              />
-
-              <Text style={styles.secureText}>
-                Your information is safe and secure.
-              </Text>
-
-            </View>
-
+            <Text style={styles.secureText}>
+              Your information is safe and secure.
+            </Text>
           </View>
 
           {/* Footer */}
-
           <View style={styles.footer}>
-
-            <View style={styles.footerFeature}>
-
-              <Truck size={17} color="#299ED5" />
-
-              <Text style={styles.footerFeatureText}>
-                Daily Delivery
-              </Text>
-
-              <View style={styles.footerDot} />
-
-              <ShieldCheck size={17} color="#28A65A" />
-
-              <Text style={styles.footerFeatureText}>
-                Pure Milk
-              </Text>
-
-            </View>
+            <View style={styles.footerLine} />
 
             <Text style={styles.footerText}>
-              FRESHNESS YOU CAN TRUST
+              YOUR MONEY, YOUR CONTROL
             </Text>
-
           </View>
-
         </Animated.View>
-
       </ScrollView>
 
       {/* SweetAlert Popup */}
-
-      <Modal
-        visible={alertVisible}
-        transparent
-        animationType="none"
-        statusBarTranslucent
-        onRequestClose={closeAlert}
-      >
-
-        <View style={styles.modalRoot}>
-
-          <Animated.View
-            style={[
-              styles.modalOverlay,
-              { opacity: modalOpacity },
-            ]}
-          />
-
-          <Pressable
-            style={styles.dismissArea}
-            onPress={closeAlert}
-          />
-
-          <Animated.View
-            style={[
-              styles.alertCard,
-              {
-                opacity: modalOpacity,
-                transform: [{ scale: modalScale }],
-              },
-            ]}
-          >
-
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={closeAlert}
-            >
-              <X size={19} color="#718092" />
-            </TouchableOpacity>
-
-            <View
-              style={[
-                styles.alertIcon,
-                isSuccess
-                  ? styles.alertIconSuccess
-                  : styles.alertIconError,
-              ]}
-            >
-
-              {isSuccess ? (
-
-                <Check
-                  size={35}
-                  color="#FFFFFF"
-                  strokeWidth={2.5}
-                />
-
-              ) : (
-
-                <AlertCircle
-                  size={35}
-                  color="#FFFFFF"
-                />
-
-              )}
-
-            </View>
-
-            <Text style={styles.alertTitle}>
-              {alertTitle}
-            </Text>
-
-            <Text style={styles.alertMessage}>
-              {alertMessage}
-            </Text>
-
-            <TouchableOpacity
-              style={[
-                styles.alertButton,
-                !isSuccess && styles.alertButtonError,
-              ]}
-              activeOpacity={0.85}
-              onPress={isSuccess ? handleContinue : closeAlert}
-            >
-
-              <Text style={styles.alertButtonText}>
-                {isSuccess ? 'Continue to OTP' : 'Try Again'}
-              </Text>
-
-              {isSuccess && (
-                <ArrowRight size={18} color="#FFFFFF" />
-              )}
-
-            </TouchableOpacity>
-
-          </Animated.View>
-
-        </View>
-
-      </Modal>
-
+       <SweetAlert
+        visible={alertData.show}
+        title={alertData.title}
+        message={alertData.message}
+        type="success"
+        confirmText={alertData.confirmText}
+        onConfirm={handleAlertConfirm}
+      />
     </KeyboardAvoidingView>
   );
 };

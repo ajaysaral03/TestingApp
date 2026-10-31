@@ -6,14 +6,14 @@ import {
   Text,
   Animated,
   StatusBar,
-  Image,
 } from 'react-native';
 
 import {
-  Droplets,
+  Wallet,
+  TrendingUp,
+  TrendingDown,
+  PieChart,
   ShieldCheck,
-  Truck,
-  Users,
   Sparkles,
 } from 'lucide-react-native';
 
@@ -57,11 +57,7 @@ const SplashScreen = ({ navigation }: any) => {
       <Animated.View
         style={[
           styles.backgroundCircleLarge,
-          {
-            transform: [
-              { rotate: rotateInterpolate },
-            ],
-          },
+          { transform: [{ rotate: rotateInterpolate }] },
         ]}
       />
 
@@ -80,41 +76,32 @@ const SplashScreen = ({ navigation }: any) => {
         <Animated.View
           style={[
             styles.topBrand,
-            {
-              opacity: contentOpacity,
-            },
+            { opacity: contentOpacity },
           ]}
         >
 
           <View style={styles.brandIcon}>
-
-            <Droplets
-              size={24}
-              color="#229BD5"
+            <Wallet
+              size={25}
+              color="#FFFFFF"
               strokeWidth={2.5}
             />
-
           </View>
 
           <Text style={styles.brandText}>
-            Milk
-            <Text style={styles.brandGreen}>
-              Mate
-            </Text>
+            Expense
+            <Text style={styles.brandGreen}>Tracker</Text>
           </Text>
 
-          <Sparkles
-            size={17}
-            color="#35A9D6"
-          />
+          <Sparkles size={17} color="#35A96B" />
 
         </Animated.View>
 
         <Text style={styles.brandTagline}>
-          YOUR MILK BUSINESS PARTNER
+          SMART MONEY MANAGEMENT
         </Text>
 
-        {/* Bike Rider Circular Logo */}
+        {/* Animated Wallet Logo */}
 
         <Animated.View
           style={[
@@ -135,11 +122,19 @@ const SplashScreen = ({ navigation }: any) => {
 
               <View style={styles.logoInnerCircle}>
 
-                <Image
-                  source={require('../../assets/images/download.png')}
-                  style={styles.deliveryImage}
-                  resizeMode="contain"
+                <Wallet
+                  size={110}
+                  color="#229B67"
+                  strokeWidth={1.7}
                 />
+
+                <View style={styles.walletBadge}>
+                  <TrendingUp
+                    size={28}
+                    color="#FFFFFF"
+                    strokeWidth={2.5}
+                  />
+                </View>
 
               </View>
 
@@ -164,92 +159,61 @@ const SplashScreen = ({ navigation }: any) => {
         >
 
           <Text style={styles.title}>
-            Fresh Milk
+            Track Your Money
           </Text>
 
           <Text style={styles.titleGreen}>
-            Delivered Daily
+            Manage Your Future
           </Text>
 
           <Text style={styles.subtitle}>
-            Manage your milk business easily
+            Manage income, expenses and savings
             {'\n'}
-            with MilkMate
+            easily with ExpenseTracker.
           </Text>
 
           {/* Features */}
 
           <View style={styles.featureRow}>
 
-            {/* Fresh */}
-
             <View style={styles.feature}>
-
               <View style={styles.featureIcon}>
-                <Droplets
-                  size={28}
-                  color="#299ED5"
-                />
+                <TrendingUp size={27} color="#25A866" />
               </View>
 
               <Text style={styles.featureText}>
-                Fresh
+                Income
               </Text>
-
             </View>
 
-            {/* Pure */}
-
             <View style={styles.feature}>
-
               <View style={styles.featureIcon}>
-                <ShieldCheck
-                  size={29}
-                  color="#2DAE5B"
-                  strokeWidth={2.5}
-                />
+                <TrendingDown size={27} color="#E45D5D" />
               </View>
 
               <Text style={styles.featureText}>
-                Pure
+                Expenses
               </Text>
-
             </View>
 
-            {/* Daily */}
-
             <View style={styles.feature}>
-
               <View style={styles.featureIcon}>
-                <Truck
-                  size={29}
-                  color="#299ED5"
-                />
+                <PieChart size={27} color="#299ED5" />
               </View>
 
               <Text style={styles.featureText}>
-                Daily
+                Analytics
               </Text>
-
             </View>
 
-            {/* Happy Customers */}
-
             <View style={styles.feature}>
-
               <View style={styles.featureIcon}>
-                <Users
-                  size={29}
-                  color="#299ED5"
-                />
+                <ShieldCheck size={27} color="#25A866" />
               </View>
 
               <Text style={styles.featureText}>
-                Happy
-                {'\n'}
-                Customers
+                Secure
               </Text>
-
             </View>
 
           </View>
@@ -263,9 +227,7 @@ const SplashScreen = ({ navigation }: any) => {
       <Animated.View
         style={[
           styles.bottom,
-          {
-            opacity: contentOpacity,
-          },
+          { opacity: contentOpacity },
         ]}
       >
 
@@ -286,16 +248,14 @@ const SplashScreen = ({ navigation }: any) => {
           <Animated.View
             style={[
               styles.progress,
-              {
-                width: progressWidth,
-              },
+              { width: progressWidth },
             ]}
           />
 
         </View>
 
         <Text style={styles.footerText}>
-          🌱  FRESHNESS YOU CAN TRUST
+          YOUR MONEY, YOUR CONTROL
         </Text>
 
       </Animated.View>

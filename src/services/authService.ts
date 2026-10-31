@@ -11,9 +11,21 @@ interface SendOtpResponse {
   otp: string;
 }
 
+interface VerifyOtpResponse {
+  success: boolean;
+  message: string;
+}
+
 const otpStore = new Map<string, OtpRecord>();
 
-// Generate a new 4-digit OTP
+const cleanMobile = (mobile: string): string => {
+  return mobile.replace(/\D/g, '');
+};
+
+const validateMobile = (mobile: string): boolean => {
+  return /^[6-9]\d{9}$/.test(mobile);
+};
+
 const generateOTP = (previousOTP?: string): string => {
   let otp = '';
 
@@ -24,67 +36,81 @@ const generateOTP = (previousOTP?: string): string => {
   return otp;
 };
 
-// Validate Indian mobile number
-const validateMobile = (mobile: string): boolean => {
-  return /^[6-9]\d{9}$/.test(mobile);
-};
-
-// Send OTP
+// SEND OTP
 export const sendLoginOtp = async (
   mobile: string,
 ): Promise<SendOtpResponse> => {
-  if (!validateMobile(mobile)) {
-    throw new Error(
-      'Mobile number must be 10 digits and start with 6, 7, 8 or 9.',
-    );
+  const number = cleanMobile(mobile);
+
+  if (!validateMobile(number)) {
+    throw new Error('Enter a valid 10-digit Indian mobile number.');
   }
 
-  const previousOTP = otpStore.get(mobile)?.otp;
+  const previousOTP = otpStore.get(number)?.otp;
   const otp = generateOTP(previousOTP);
 
-  otpStore.set(mobile, {
+  otpStore.set(number, {
     otp,
     expiresAt: Date.now() + 2 * 60 * 1000,
     attempts: 0,
   });
 
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise<void>(resolve => setTimeout(resolve, 300));
 
   return {
     success: true,
-    message: `Your Demo OTP is ${otp}`,
+    message: 'Demo OTP generated successfully.',
     otp,
   };
 };
 
-// Verify OTP
+// VERIFY OTP
 export const verifyLoginOtp = async (
   mobile: string,
   enteredOtp: string,
-): Promise<{ success: boolean; message: string }> => {
-  const record = otpStore.get(mobile);
+): Promise<VerifyOtpResponse> => {
+  const number = cleanMobile(mobile);
+  const otp = enteredOtp.trim();
+
+  if (!validateMobile(number)) {
+    throw new Error('Invalid mobile number.');
+  }
+
+  const record = otpStore.get(number);
 
   if (!record) {
-    throw new Error('Please generate OTP first.');
+    throw new Error('OTP not found. Please generate a new OTP.');
   }
 
   if (Date.now() > record.expiresAt) {
-    otpStore.delete(mobile);
+    otpStore.delete(number);
     throw new Error('OTP expired. Please resend OTP.');
   }
 
   if (record.attempts >= 5) {
-    otpStore.delete(mobile);
-    throw new Error('Maximum attempts reached. Generate new OTP.');
+    otpStore.delete(number);
+    throw new Error('Maximum attempts reached. Please resend OTP.');
   }
 
-  record.attempts++;
-
-  if (record.otp !== enteredOtp) {
-    throw new Error('Incorrect OTP. Please try again.');
+  if (!/^\d{4}$/.test(otp)) {
+    throw new Error('Please enter a valid 4-digit OTP.');
   }
 
-  otpStore.delete(mobile);
+  if (record.otp !== otp) {
+    record.attempts += 1;
+
+    if (record.attempts >= 5) {
+      otpStore.delete(number);
+      throw new Error('Maximum attempts reached. Please resend OTP.');
+    }
+
+    throw new Error(
+      `Incorrect OTP. ${5 - record.attempts} attempts remaining.`,
+    );
+  }
+
+  // Correct OTP
+  otpStore.delete(number);
 
   return {
     success: true,
@@ -92,7 +118,9 @@ export const verifyLoginOtp = async (
   };
 };
 
-// Resend OTP
-export const resendLoginOtp = async (mobile: string) => {
+// RESEND OTP
+export const resendLoginOtp = async (
+  mobile: string,
+): Promise<SendOtpResponse> => {
   return sendLoginOtp(mobile);
 };

@@ -6,15 +6,11 @@ import { FONTS } from '../../constants/fonts';
 
 export const styles = StyleSheet.create({
 
-  // Main Container
-
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
     overflow: 'hidden',
   },
-
-  // Main Center Content
 
   mainContent: {
     flex: 1,
@@ -25,14 +21,12 @@ export const styles = StyleSheet.create({
     paddingBottom: 105,
   },
 
-  // Background Circles
-
   backgroundCircleLarge: {
     position: 'absolute',
     width: 360,
     height: 360,
     borderRadius: 180,
-    backgroundColor: '#DDF3FF',
+    backgroundColor: '#E0F5E9',
     top: -180,
     right: -180,
   },
@@ -42,7 +36,7 @@ export const styles = StyleSheet.create({
     width: 280,
     height: 280,
     borderRadius: 140,
-    backgroundColor: '#EAF8F0',
+    backgroundColor: '#E9F4FF',
     bottom: -160,
     left: -155,
   },
@@ -52,7 +46,7 @@ export const styles = StyleSheet.create({
     width: 15,
     height: 15,
     borderRadius: 10,
-    backgroundColor: '#BCE9FF',
+    backgroundColor: '#A9E8C2',
     top: '24%',
     left: 30,
     opacity: 0.8,
@@ -63,13 +57,11 @@ export const styles = StyleSheet.create({
     width: 12,
     height: 12,
     borderRadius: 10,
-    backgroundColor: '#B8E9C5',
+    backgroundColor: '#B8DFFF',
     right: 35,
     bottom: '28%',
     opacity: 0.8,
   },
-
-  // Brand
 
   topBrand: {
     flexDirection: 'row',
@@ -82,52 +74,50 @@ export const styles = StyleSheet.create({
     width: 43,
     height: 43,
     borderRadius: 15,
-    backgroundColor: '#E5F5FF',
+    backgroundColor: '#239D64',
     alignItems: 'center',
     justifyContent: 'center',
   },
 
   brandText: {
-    fontSize: 35,
+    fontSize: 30,
     fontWeight: '900',
-    color: '#123D67',
+    color: '#153B2C',
     fontFamily: FONTS.extraBold,
-    letterSpacing: -1.5,
+    letterSpacing: -1.2,
   },
 
   brandGreen: {
-    color: '#24A65A',
+    color: '#239D64',
   },
 
   brandTagline: {
     fontSize: 10,
     letterSpacing: 2,
     color: '#708092',
-    marginTop: 3,
+    marginTop: 8,
     fontFamily: FONTS.semiBold,
   },
-
-  // Bike Rider Circular Logo
 
   logoWrapper: {
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 12,
-    marginBottom: 12,
+    marginTop: 18,
+    marginBottom: 18,
   },
 
   logoOuterCircle: {
-    width: 270,
-    height: 270,
-    borderRadius: 135,
-    backgroundColor: '#DDF2FF',
+    width: 250,
+    height: 250,
+    borderRadius: 125,
+    backgroundColor: '#DDF3E6',
     borderWidth: 2,
-    borderColor: '#A8DFF5',
+    borderColor: '#A5DBB8',
     alignItems: 'center',
     justifyContent: 'center',
 
-    shadowColor: '#238FC2',
+    shadowColor: '#239D64',
     shadowOffset: {
       width: 0,
       height: 9,
@@ -138,10 +128,10 @@ export const styles = StyleSheet.create({
   },
 
   logoMiddleCircle: {
-    width: 252,
-    height: 252,
-    borderRadius: 126,
-    backgroundColor: '#EDF9FF',
+    width: 232,
+    height: 232,
+    borderRadius: 116,
+    backgroundColor: '#EFFAF3',
     borderWidth: 2,
     borderColor: '#FFFFFF',
     alignItems: 'center',
@@ -149,23 +139,29 @@ export const styles = StyleSheet.create({
   },
 
   logoInnerCircle: {
-    width: 234,
-    height: 234,
-    borderRadius: 117,
-    backgroundColor: '#F7FCFF',
+    width: 214,
+    height: 214,
+    borderRadius: 107,
+    backgroundColor: '#FFFFFF',
     borderWidth: 2,
-    borderColor: '#CBEAF8',
+    borderColor: '#CBEAD5',
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
   },
 
-  deliveryImage: {
-    width: '100%',
-    height: '100%',
+  walletBadge: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#25A866',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 3,
+    borderColor: '#FFFFFF',
   },
-
-  // Content
 
   content: {
     width: '100%',
@@ -173,23 +169,21 @@ export const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 35,
-    lineHeight: 41,
+    fontSize: 31,
+    lineHeight: 39,
     fontWeight: '900',
-    color: '#123D67',
+    color: '#153B2C',
     textAlign: 'center',
     fontFamily: FONTS.extraBold,
-    letterSpacing: -0.7,
   },
 
   titleGreen: {
-    fontSize: 35,
-    lineHeight: 41,
+    fontSize: 31,
+    lineHeight: 39,
     fontWeight: '900',
-    color: '#28A64F',
+    color: '#239D64',
     textAlign: 'center',
     fontFamily: FONTS.extraBold,
-    letterSpacing: -0.7,
   },
 
   subtitle: {
@@ -200,8 +194,6 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: FONTS.medium,
   },
-
-  // Features
 
   featureRow: {
     width: '100%',
@@ -218,35 +210,25 @@ export const styles = StyleSheet.create({
   },
 
   featureIcon: {
-    width: 58,
-    height: 58,
-    borderRadius: 35,
-    backgroundColor: '#E9F7FF',
+    width: 55,
+    height: 55,
+    borderRadius: 30,
+    backgroundColor: '#FFFFFF',
     borderWidth: 2,
-    borderColor: '#FFFFFF',
+    borderColor: '#E8F4EC',
     alignItems: 'center',
     justifyContent: 'center',
-
-    shadowColor: '#80BBD9',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
-    elevation: 4,
+    elevation: 3,
   },
 
   featureText: {
-    fontSize: 12,
+    fontSize: 11,
     lineHeight: 17,
     color: '#16436A',
     fontWeight: '700',
     fontFamily: FONTS.bold,
     textAlign: 'center',
   },
-
-  // Bottom Loading
 
   bottom: {
     position: 'absolute',
@@ -270,7 +252,7 @@ export const styles = StyleSheet.create({
 
   loadingPercent: {
     fontSize: 14,
-    color: '#28A64F',
+    color: '#239D64',
     fontWeight: '900',
     fontFamily: FONTS.bold,
   },
@@ -278,7 +260,7 @@ export const styles = StyleSheet.create({
   progressBackground: {
     height: 9,
     width: '100%',
-    backgroundColor: '#DCEEF7',
+    backgroundColor: '#DCEFE3',
     borderRadius: 20,
     overflow: 'hidden',
   },
