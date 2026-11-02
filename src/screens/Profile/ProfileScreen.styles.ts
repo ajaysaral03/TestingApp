@@ -1,181 +1,189 @@
+import {StyleSheet, Dimensions} from 'react-native';
 
-import {StyleSheet} from 'react-native';
+const {width} = Dimensions.get('window');
+const compact = width < 370;
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F3F8F5',
   },
-
   loadingContainer: {
     flex: 1,
     backgroundColor: '#F3F8F5',
     justifyContent: 'center',
     alignItems: 'center',
   },
-
   loadingText: {
     color: '#159765',
     marginTop: 12,
     fontSize: 13,
     fontWeight: '600',
   },
-
   scrollContent: {
     paddingHorizontal: 18,
-    paddingBottom: 35,
+    paddingTop: 6,
+    paddingBottom: 40,
   },
 
   // HEADER
   header: {
-    height: 65,
+    minHeight: 64,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 18,
     backgroundColor: '#F3F8F5',
+    marginBottom: 8,
   },
-
   headerButton: {
     width: 42,
     height: 42,
-    borderRadius: 14,
+    borderRadius: 13,
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 2,
+    shadowColor: '#18392B',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
   },
-
   headerTitleContainer: {
     flex: 1,
     alignItems: 'center',
+    paddingHorizontal: 8,
   },
-
   headerTitle: {
     fontSize: 19,
-    fontWeight: '800',
+    fontWeight: '900',
     color: '#18392B',
+    textAlign: 'center',
   },
-
   headerSubtitle: {
     fontSize: 11,
     color: '#89968E',
     marginTop: 3,
+    textAlign: 'center',
   },
 
-  // PROFILE CARD
+  // PROFILE
   profileCard: {
+    width: '100%',
     backgroundColor: '#FFFFFF',
-    borderRadius: 23,
-    paddingVertical: 24,
+    borderRadius: 21,
+    paddingVertical: 22,
     paddingHorizontal: 18,
     alignItems: 'center',
-    marginTop: 12,
-    elevation: 3,
+    marginTop: 4,
+    elevation: 2,
+    shadowColor: '#18392B',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
   },
-
   imageContainer: {
     position: 'relative',
-    marginBottom: 13,
+    marginBottom: 12,
   },
-
   profileImage: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
+    width: 94,
+    height: 94,
+    borderRadius: 47,
   },
-
   avatarPlaceholder: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
+    width: 94,
+    height: 94,
+    borderRadius: 47,
     backgroundColor: '#E5F5EC',
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   avatarText: {
-    fontSize: 36,
-    fontWeight: '800',
+    fontSize: 35,
+    fontWeight: '900',
     color: '#159765',
   },
-
   cameraIcon: {
     position: 'absolute',
     right: 0,
     bottom: 0,
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+    width: 31,
+    height: 31,
+    borderRadius: 16,
     backgroundColor: '#159765',
     borderWidth: 3,
     borderColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   profileName: {
-    fontSize: 21,
-    fontWeight: '800',
+    maxWidth: '100%',
+    fontSize: 20,
+    fontWeight: '900',
     color: '#18392B',
+    textAlign: 'center',
   },
-
   profileMobile: {
     fontSize: 13,
     color: '#89968E',
     marginTop: 5,
   },
-
   memberBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
     backgroundColor: '#E8F7EF',
-    paddingHorizontal: 12,
+    paddingHorizontal: 13,
     paddingVertical: 7,
     borderRadius: 20,
-    marginTop: 12,
+    marginTop: 11,
   },
-
   memberText: {
     color: '#159765',
     fontSize: 11,
     fontWeight: '700',
   },
 
-  editProfileButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 7,
-    backgroundColor: '#E8F7EF',
-    paddingHorizontal: 16,
-    paddingVertical: 9,
-    borderRadius: 20,
-    marginTop: 14,
+  // SUMMARY SECTIONS
+  summarySection: {
+    width: '100%',
+    marginTop: 20,
   },
-
-  editProfileText: {
-    color: '#159765',
-    fontSize: 12,
-    fontWeight: '700',
+  summarySectionHeader: {
+    marginBottom: 2,
   },
-
-  // SUMMARY CARDS
+  summarySectionTitle: {
+    color: '#18392B',
+    fontSize: 17,
+    fontWeight: '900',
+  },
+  summarySectionSubtitle: {
+    color: '#89968E',
+    fontSize: 11,
+    marginTop: 4,
+  },
   summaryContainer: {
+    width: '100%',
     flexDirection: 'row',
-    gap: 12,
-    marginTop: 15,
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginTop: 12,
   },
-
   summaryCard: {
-    flex: 1,
+    width: '48.2%',
     backgroundColor: '#FFFFFF',
-    borderRadius: 18,
-    padding: 15,
-    minHeight: 120,
+    borderRadius: 17,
+    padding: compact ? 12 : 14,
+    minHeight: 126,
+    marginBottom: 11,
+    justifyContent: 'center',
     elevation: 2,
+    shadowColor: '#18392B',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
   },
-
   summaryIconIncome: {
     width: 37,
     height: 37,
@@ -185,7 +193,6 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 10,
   },
-
   summaryIconExpense: {
     width: 37,
     height: 37,
@@ -195,7 +202,6 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 10,
   },
-
   summaryIconBlue: {
     width: 37,
     height: 37,
@@ -205,7 +211,6 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 10,
   },
-
   summaryIconPurple: {
     width: 37,
     height: 37,
@@ -215,80 +220,87 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 10,
   },
-
   summaryLabel: {
-    fontSize: 12,
+    fontSize: compact ? 10 : 11,
     color: '#89968E',
-    fontWeight: '500',
+    fontWeight: '700',
   },
-
   incomeAmount: {
-    fontSize: 17,
-    fontWeight: '800',
+    fontSize: compact ? 15 : 17,
+    fontWeight: '900',
     color: '#159765',
-    marginTop: 6,
+    marginTop: 7,
+    flexShrink: 1,
   },
-
   expenseAmount: {
-    fontSize: 17,
-    fontWeight: '800',
+    fontSize: compact ? 15 : 17,
+    fontWeight: '900',
     color: '#E85C68',
-    marginTop: 6,
+    marginTop: 7,
+    flexShrink: 1,
   },
-
   balanceAmount: {
-    fontSize: 17,
-    fontWeight: '800',
+    fontSize: compact ? 15 : 17,
+    fontWeight: '900',
     color: '#4386CF',
-    marginTop: 6,
+    marginTop: 7,
+    flexShrink: 1,
   },
-
+  negativeBalanceAmount: {
+    fontSize: compact ? 15 : 17,
+    fontWeight: '900',
+    color: '#E85C68',
+    marginTop: 7,
+    flexShrink: 1,
+  },
   transactionAmount: {
-    fontSize: 17,
-    fontWeight: '800',
+    fontSize: compact ? 16 : 18,
+    fontWeight: '900',
     color: '#8A68CC',
-    marginTop: 6,
+    marginTop: 7,
   },
 
   // ACCOUNT DETAILS
   detailsSection: {
-    marginTop: 25,
+    width: '100%',
+    marginTop: 20,
   },
-
   sectionTitle: {
-    fontSize: 19,
-    fontWeight: '800',
+    fontSize: 17,
+    fontWeight: '900',
     color: '#18392B',
-    marginBottom: 13,
+    marginBottom: 12,
   },
-
   detailsCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 18,
+    borderRadius: 17,
     paddingHorizontal: 16,
     paddingVertical: 5,
     elevation: 2,
+    shadowColor: '#18392B',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
   },
-
   detailRow: {
-    minHeight: 53,
+    minHeight: 54,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-
   detailLabel: {
     fontSize: 12,
     color: '#89968E',
-    fontWeight: '500',
+    fontWeight: '600',
   },
-
   detailValue: {
+    flex: 1,
     fontSize: 13,
     color: '#263B31',
-    fontWeight: '700',
+    fontWeight: '800',
+    textAlign: 'right',
+    marginLeft: 12,
   },
-
   detailDivider: {
     height: 1,
     backgroundColor: '#EEF2EF',
@@ -296,70 +308,66 @@ export const styles = StyleSheet.create({
 
   // SETTINGS
   settingsSection: {
-    marginTop: 25,
+    width: '100%',
+    marginTop: 24,
   },
-
   sectionHeader: {
-    marginBottom: 13,
+    marginBottom: 12,
   },
-
   sectionSubtitle: {
     fontSize: 12,
     color: '#89968E',
     marginTop: 4,
   },
-
   settingsCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
+    borderRadius: 19,
     paddingHorizontal: 14,
     elevation: 2,
+    shadowColor: '#18392B',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
   },
-
   settingItem: {
-    minHeight: 76,
+    minHeight: 74,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 11,
   },
-
   settingBorder: {
     borderBottomWidth: 1,
     borderBottomColor: '#EEF2EF',
   },
-
   settingIcon: {
-    width: 43,
-    height: 43,
-    borderRadius: 14,
+    width: 42,
+    height: 42,
+    borderRadius: 13,
     backgroundColor: '#E8F7EF',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
   },
-
   settingTextContainer: {
     flex: 1,
   },
-
   settingTitle: {
     fontSize: 13,
-    fontWeight: '700',
+    fontWeight: '800',
     color: '#263B31',
   },
-
   settingSubtitle: {
     fontSize: 11,
     color: '#929D96',
-    marginTop: 5,
+    marginTop: 4,
   },
 
   // LOGOUT
   logoutButton: {
-    height: 55,
+    height: 54,
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    marginTop: 23,
+    borderRadius: 15,
+    marginTop: 22,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -367,21 +375,20 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#F5DADA',
   },
-
   logoutText: {
     fontSize: 14,
-    fontWeight: '800',
+    fontWeight: '900',
     color: '#E85C68',
   },
-
   versionText: {
     textAlign: 'center',
     fontSize: 11,
     color: '#A0AAA5',
-    marginTop: 17,
+    marginTop: 16,
+    marginBottom: 10,
   },
 
-  // MODAL
+  // EDIT MODAL
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.45)',
@@ -389,34 +396,35 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 22,
   },
-
   modalContainer: {
     width: '100%',
     backgroundColor: '#FFFFFF',
-    borderRadius: 22,
-    padding: 22,
+    borderRadius: 21,
+    padding: 21,
+    elevation: 8,
+    shadowColor: '#000000',
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
   },
-
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 22,
+    marginBottom: 20,
   },
-
   modalTitle: {
-    fontSize: 20,
-    fontWeight: '800',
+    flex: 1,
+    fontSize: 19,
+    fontWeight: '900',
     color: '#18392B',
   },
-
   inputLabel: {
     fontSize: 13,
-    fontWeight: '700',
+    fontWeight: '800',
     color: '#34483D',
     marginBottom: 8,
   },
-
   modalInput: {
     height: 50,
     borderWidth: 1,
@@ -425,41 +433,37 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 14,
     fontSize: 14,
     color: '#18392B',
-    marginBottom: 20,
+    marginBottom: 19,
+    backgroundColor: '#FAFCFA',
   },
-
   modalButtons: {
     flexDirection: 'row',
     gap: 10,
   },
-
   cancelButton: {
     flex: 1,
-    height: 48,
+    height: 47,
     borderRadius: 12,
     backgroundColor: '#F0F4F1',
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   cancelText: {
     color: '#52645A',
     fontSize: 13,
-    fontWeight: '700',
+    fontWeight: '800',
   },
-
   saveButton: {
     flex: 1,
-    height: 48,
+    height: 47,
     borderRadius: 12,
     backgroundColor: '#159765',
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   saveText: {
     color: '#FFFFFF',
     fontSize: 13,
-    fontWeight: '700',
+    fontWeight: '800',
   },
 });

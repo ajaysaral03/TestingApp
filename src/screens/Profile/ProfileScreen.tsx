@@ -1,6 +1,4 @@
-
 import React, {useCallback, useState} from 'react';
-
 import {
   View,
   Text,
@@ -13,7 +11,6 @@ import {
   StatusBar,
   ActivityIndicator,
 } from 'react-native';
-
 import {
   ArrowLeft,
   Pencil,
@@ -34,34 +31,28 @@ import {
   IndianRupee,
   X,
 } from 'lucide-react-native';
-
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {useFocusEffect} from '@react-navigation/native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
 import {styles} from './ProfileScreen.styles';
-
 import {
   getCurrentUser,
   clearCurrentUser,
 } from '../../storage/authStorage';
-
 import {
   getProfile,
   saveProfile,
   ProfileData,
 } from '../../storage/profileStorage';
-
 import {
   getTransactions,
   Transaction,
-} from '../../services/transactionService';
-
+} from '../../storage/transactionStorage';
 import {RootStackParamList} from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Profile'>;
-
 type EditorType = 'name' | 'budget' | null;
 
 const DEFAULT_PROFILE: ProfileData = {
@@ -70,41 +61,101 @@ const DEFAULT_PROFILE: ProfileData = {
   monthlyBudget: 30000,
 };
 
-const formatAmount = (amount: number) =>
-  `₹${amount.toLocaleString('en-IN')}`;
+const getAmount = (value: unknown): number => {
+  const cleaned = String(value ?? 0)
+    .replace(/[₹,\s]/g, '')
+    .trim();
+  const parsed = Number(cleaned);
+  return Number.isFinite(parsed) ? parsed : 0;
+};
+
+const normalizeType = (value: unknown): string =>
+  String(value ?? '').trim().toLowerCase();
+
+const getTransactionMonth = (dateValue: unknown): string => {
+  const value = String(dateValue ?? '').trim();
+  if (!value) {
+    return '';
+  }
+
+  // ISO: YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss
+  const isoMatch = value.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (isoMatch) {
+    const month = Number(isoMatch[2]);
+    if (month >= 1 && month <= 12) {
+      return `${isoMatch[1]}-${String(month).padStart(2, '0')}`;
+    }
+    return '';
+  }
+
+  // Indian date: DD/MM/YYYY or DD-MM-YYYY (also accepts a time suffix)
+  const indianMatch = value.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})(?:\s|$)/);
+  if (indianMatch) {
+    const day = Number(indianMatch[1]);
+    const month = Number(indianMatch[2]);
+    if (day >= 1 && day <= 31 && month >= 1 && month <= 12) {
+      return `${indianMatch[3]}-${String(month).padStart(2, '0')}`;
+    }
+  }
+
+  return '';
+};
+
+const getCurrentMonthKey = (): string => {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+};
+
+const getCurrentMonthLabel = (): string =>
+  new Date().toLocaleDateString('en-IN', {
+    month: 'long',
+    year: 'numeric',
+  });
+
+const formatAmount = (amount: number): string => {
+  const safeAmount = Number.isFinite(amount) ? amount : 0;
+  return `${safeAmount < 0 ? '-₹' : '₹'}${Math.abs(safeAmount).toLocaleString(
+    'en-IN',
+    {maximumFractionDigits: 2},
+  )}`;
+};
 
 const ProfileScreen = ({navigation}: Props) => {
   const [mobile, setMobile] = useState('');
   const [profile, setProfile] = useState<ProfileData>(DEFAULT_PROFILE);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-
   const [editorVisible, setEditorVisible] = useState(false);
   const [editorType, setEditorType] = useState<EditorType>(null);
   const [inputValue, setInputValue] = useState('');
 
-  // TRANSACTION CALCULATIONS
-  const totalIncome = transactions
-    .filter(item => item.type === 'income')
-    .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+  // All-time totals: every saved transaction for the logged-in user.
 
-  const totalExpense = transactions
-    .filter(item => item.type === 'expense')
-    .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+  // Current-month totals: only transactions whose date belongs to this month.
+  const currentMonthKey = getCurrentMonthKey();
+  const currentMonthTransactions = transactions.filter(
+    item => getTransactionMonth(item.date) === currentMonthKey,
+  );
 
-  const balance = totalIncome - totalExpense;
+  const monthlyIncome = currentMonthTransactions.reduce((sum, item) => {
+    return normalizeType(item.type) === 'income'
+      ? sum + getAmount(item.amount)
+      : sum;
+  }, 0);
 
-  // LOAD PROFILE AND TRANSACTIONS
+  const monthlyExpense = currentMonthTransactions.reduce((sum, item) => {
+    return normalizeType(item.type) === 'expense'
+      ? sum + getAmount(item.amount)
+      : sum;
+  }, 0);
+
+  const monthlyBalance = monthlyIncome - monthlyExpense;
+
   const loadProfileData = useCallback(async () => {
     try {
       setLoading(true);
-
-      // IMPORTANT: getCurrentUser returns mobile string directly.
       const currentMobile = await getCurrentUser();
-
-      console.log('Logged-in mobile:', currentMobile);
 
       if (!currentMobile) {
         setMobile('');
@@ -114,7 +165,6 @@ const ProfileScreen = ({navigation}: Props) => {
         return;
       }
 
-      // Normalize mobile number.
       const userMobile = String(currentMobile)
         .replace(/\D/g, '')
         .slice(-10);
@@ -125,55 +175,41 @@ const ProfileScreen = ({navigation}: Props) => {
 
       setMobile(userMobile);
 
-      // Load profile for logged-in user.
-      const savedProfile = await getProfile(userMobile);
-      setProfile(savedProfile);
+      const [savedProfile, savedTransactions] = await Promise.all([
+        getProfile(userMobile),
+        getTransactions(userMobile),
+      ]);
 
-      // IMPORTANT: Pass mobile to getTransactions.
-      const savedTransactions = await getTransactions(userMobile);
-
-      console.log('Profile data:', savedProfile);
-      console.log('Transaction data:', savedTransactions);
-
-      setTransactions(savedTransactions);
+      setProfile(savedProfile || DEFAULT_PROFILE);
+      setTransactions(Array.isArray(savedTransactions) ? savedTransactions : []);
     } catch (error) {
       console.log('Profile loading error:', error);
-
       Alert.alert(
         'Profile Error',
-        error instanceof Error
-          ? error.message
-          : 'Unable to load profile data.',
+        error instanceof Error ? error.message : 'Unable to load profile data.',
       );
     } finally {
       setLoading(false);
     }
   }, [navigation]);
 
-  // RELOAD WHEN PROFILE SCREEN OPENS
   useFocusEffect(
     useCallback(() => {
       loadProfileData();
     }, [loadProfileData]),
   );
 
-  // OPEN EDIT MODAL
   const openEditor = (type: EditorType) => {
     setEditorType(type);
-
-    if (type === 'name') {
-      setInputValue(profile.name);
-    } else if (type === 'budget') {
-      setInputValue(String(profile.monthlyBudget));
-    }
-
+    setInputValue(
+      type === 'name' ? profile.name : String(profile.monthlyBudget),
+    );
     setEditorVisible(true);
   };
 
-  // SAVE PROFILE
   const handleSave = async () => {
-    if (!mobile) {
-      Alert.alert('Error', 'Mobile number not found.');
+    if (!mobile || !editorType) {
+      Alert.alert('Error', 'Profile details not found.');
       return;
     }
 
@@ -181,38 +217,30 @@ const ProfileScreen = ({navigation}: Props) => {
 
     if (editorType === 'name') {
       const newName = inputValue.trim();
-
       if (!newName) {
         Alert.alert('Validation', 'Please enter your name.');
         return;
       }
-
       updatedProfile.name = newName;
     }
 
     if (editorType === 'budget') {
-      const newBudget = Number(inputValue);
-
+      const newBudget = getAmount(inputValue);
       if (!Number.isFinite(newBudget) || newBudget <= 0) {
         Alert.alert('Validation', 'Please enter a valid budget.');
         return;
       }
-
       updatedProfile.monthlyBudget = newBudget;
     }
 
     try {
       setSaving(true);
-
       await saveProfile(mobile, updatedProfile);
-
       setProfile(updatedProfile);
       setEditorVisible(false);
-
       Alert.alert('Success', 'Profile updated successfully.');
     } catch (error) {
       console.log('Profile save error:', error);
-
       Alert.alert(
         'Error',
         error instanceof Error ? error.message : 'Unable to save profile.',
@@ -222,7 +250,6 @@ const ProfileScreen = ({navigation}: Props) => {
     }
   };
 
-  // PROFILE IMAGE PICKER
   const handleImagePicker = async () => {
     try {
       const result = await launchImageLibrary({
@@ -246,7 +273,6 @@ const ProfileScreen = ({navigation}: Props) => {
       }
 
       const imageUri = result.assets?.[0]?.uri;
-
       if (!imageUri || !mobile) {
         return;
       }
@@ -258,15 +284,12 @@ const ProfileScreen = ({navigation}: Props) => {
 
       await saveProfile(mobile, updatedProfile);
       setProfile(updatedProfile);
-
-      Alert.alert('Success', 'Profile photo updated successfully.');
     } catch (error) {
       console.log('Image picker error:', error);
       Alert.alert('Error', 'Unable to save profile photo.');
     }
   };
 
-  // SETTINGS OPTIONS
   const settings = [
     {
       title: 'Personal Information',
@@ -324,33 +347,25 @@ const ProfileScreen = ({navigation}: Props) => {
     },
   ];
 
-  // LOGOUT
   const handleLogout = () => {
-    Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
+    Alert.alert('Logout', 'Are you sure you want to logout?', [
+      {text: 'Cancel', style: 'cancel'},
+      {
+        text: 'Logout',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await clearCurrentUser();
+            navigation.reset({
+              index: 0,
+              routes: [{name: 'Login'}],
+            });
+          } catch (error) {
+            Alert.alert('Error', 'Unable to logout.');
+          }
         },
-        {
-          text: 'Logout',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await clearCurrentUser();
-              navigation.reset({
-                index: 0,
-                routes: [{name: 'Login'}],
-              });
-            } catch (error) {
-              Alert.alert('Error', 'Unable to logout.');
-            }
-          },
-        },
-      ],
-    );
+      },
+    ]);
   };
 
   if (loading) {
@@ -364,15 +379,12 @@ const ProfileScreen = ({navigation}: Props) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <StatusBar
-        backgroundColor="#F3F8F5"
-        barStyle="dark-content"
-      />
+      <StatusBar backgroundColor="#F3F8F5" barStyle="dark-content" />
 
-      {/* FIXED HEADER */}
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.headerButton}
+          activeOpacity={0.7}
           onPress={() => navigation.goBack()}>
           <ArrowLeft size={22} color="#18392B" />
         </TouchableOpacity>
@@ -384,6 +396,7 @@ const ProfileScreen = ({navigation}: Props) => {
 
         <TouchableOpacity
           style={styles.headerButton}
+          activeOpacity={0.7}
           onPress={() => openEditor('name')}>
           <Pencil size={18} color="#159765" />
         </TouchableOpacity>
@@ -392,11 +405,11 @@ const ProfileScreen = ({navigation}: Props) => {
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}>
-
-        {/* PROFILE CARD */}
+        {/* PROFILE */}
         <View style={styles.profileCard}>
           <TouchableOpacity
             style={styles.imageContainer}
+            activeOpacity={0.8}
             onPress={handleImagePicker}>
             {profile.photo ? (
               <Image
@@ -411,7 +424,6 @@ const ProfileScreen = ({navigation}: Props) => {
                 </Text>
               </View>
             )}
-
             <View style={styles.cameraIcon}>
               <Camera size={15} color="#FFFFFF" />
             </View>
@@ -420,71 +432,84 @@ const ProfileScreen = ({navigation}: Props) => {
           <Text style={styles.profileName}>
             {profile.name || 'Add Your Name'}
           </Text>
-
           <Text style={styles.profileMobile}>+91 {mobile}</Text>
 
           <View style={styles.memberBadge}>
             <ShieldCheck size={14} color="#159765" />
             <Text style={styles.memberText}>Personal Account</Text>
           </View>
-
-
         </View>
 
-        {/* INCOME AND EXPENSE */}
-        <View style={styles.summaryContainer}>
-          <View style={styles.summaryCard}>
-            <View style={styles.summaryIconIncome}>
-              <TrendingUp size={20} color="#159765" />
-            </View>
 
-            <Text style={styles.summaryLabel}>Total Income</Text>
-            <Text style={styles.incomeAmount}>
-              {formatAmount(totalIncome)}
+        {/* CURRENT MONTH SUMMARY */}
+        <View style={styles.summarySection}>
+          <View style={styles.summarySectionHeader}>
+            <Text style={styles.summarySectionTitle}>
+              This Month - {getCurrentMonthLabel()}
+            </Text>
+            <Text style={styles.summarySectionSubtitle}>
+              Only this month's income and expenses
             </Text>
           </View>
 
-          <View style={styles.summaryCard}>
-            <View style={styles.summaryIconExpense}>
-              <TrendingDown size={20} color="#E85C68" />
+          <View style={styles.summaryContainer}>
+            <View style={styles.summaryCard}>
+              <View style={styles.summaryIconIncome}>
+                <TrendingUp size={20} color="#159765" />
+              </View>
+              <Text style={styles.summaryLabel}>Monthly Income</Text>
+              <Text
+                style={styles.incomeAmount}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.7}>
+                {formatAmount(monthlyIncome)}
+              </Text>
             </View>
 
-            <Text style={styles.summaryLabel}>Total Expenses</Text>
-            <Text style={styles.expenseAmount}>
-              {formatAmount(totalExpense)}
-            </Text>
-          </View>
-        </View>
-
-        {/* BALANCE AND TRANSACTIONS */}
-        <View style={styles.summaryContainer}>
-          <View style={styles.summaryCard}>
-            <View style={styles.summaryIconBlue}>
-              <IndianRupee size={20} color="#4386CF" />
+            <View style={styles.summaryCard}>
+              <View style={styles.summaryIconExpense}>
+                <TrendingDown size={20} color="#E85C68" />
+              </View>
+              <Text style={styles.summaryLabel}>Monthly Expenses</Text>
+              <Text
+                style={styles.expenseAmount}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.7}>
+                {formatAmount(monthlyExpense)}
+              </Text>
             </View>
 
-            <Text style={styles.summaryLabel}>Current Balance</Text>
-            <Text style={styles.balanceAmount}>
-              {formatAmount(balance)}
-            </Text>
-          </View>
-
-          <View style={styles.summaryCard}>
-            <View style={styles.summaryIconPurple}>
-              <ReceiptText size={20} color="#8A68CC" />
+            <View style={styles.summaryCard}>
+              <View style={styles.summaryIconBlue}>
+                <IndianRupee size={20} color="#4386CF" />
+              </View>
+              <Text style={styles.summaryLabel}>Monthly Balance</Text>
+              <Text
+                style={monthlyBalance < 0 ? styles.negativeBalanceAmount : styles.balanceAmount}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.7}>
+                {formatAmount(monthlyBalance)}
+              </Text>
             </View>
 
-            <Text style={styles.summaryLabel}>Transactions</Text>
-            <Text style={styles.transactionAmount}>
-              {transactions.length}
-            </Text>
+            <View style={styles.summaryCard}>
+              <View style={styles.summaryIconPurple}>
+                <ReceiptText size={20} color="#8A68CC" />
+              </View>
+              <Text style={styles.summaryLabel}>Monthly Transactions</Text>
+              <Text style={styles.transactionAmount}>
+                {currentMonthTransactions.length}
+              </Text>
+            </View>
           </View>
         </View>
 
         {/* ACCOUNT DETAILS */}
         <View style={styles.detailsSection}>
           <Text style={styles.sectionTitle}>Account Details</Text>
-
           <View style={styles.detailsCard}>
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Mobile Number</Text>
@@ -503,13 +528,13 @@ const ProfileScreen = ({navigation}: Props) => {
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Monthly Budget</Text>
               <Text style={styles.detailValue}>
-                {formatAmount(profile.monthlyBudget)}
+                {formatAmount(getAmount(profile.monthlyBudget))}
               </Text>
             </View>
           </View>
         </View>
 
-        {/* SETTINGS - 8 OPTIONS */}
+        {/* SETTINGS */}
         <View style={styles.settingsSection}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Settings</Text>
@@ -527,8 +552,7 @@ const ProfileScreen = ({navigation}: Props) => {
                   key={item.title}
                   style={[
                     styles.settingItem,
-                    index !== settings.length - 1 &&
-                      styles.settingBorder,
+                    index !== settings.length - 1 && styles.settingBorder,
                   ]}
                   activeOpacity={0.7}
                   onPress={item.action}>
@@ -537,9 +561,7 @@ const ProfileScreen = ({navigation}: Props) => {
                   </View>
 
                   <View style={styles.settingTextContainer}>
-                    <Text style={styles.settingTitle}>
-                      {item.title}
-                    </Text>
+                    <Text style={styles.settingTitle}>{item.title}</Text>
                     <Text style={styles.settingSubtitle}>
                       {item.subtitle}
                     </Text>
@@ -555,6 +577,7 @@ const ProfileScreen = ({navigation}: Props) => {
         {/* LOGOUT */}
         <TouchableOpacity
           style={styles.logoutButton}
+          activeOpacity={0.7}
           onPress={handleLogout}>
           <LogOut size={19} color="#E85C68" />
           <Text style={styles.logoutText}>Logout</Text>
@@ -565,7 +588,7 @@ const ProfileScreen = ({navigation}: Props) => {
         </Text>
       </ScrollView>
 
-      {/* EDIT MODAL */}
+      {/* EDIT PROFILE MODAL */}
       <Modal
         visible={editorVisible}
         transparent
@@ -575,12 +598,11 @@ const ProfileScreen = ({navigation}: Props) => {
           <View style={styles.modalContainer}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>
-                {editorType === 'name'
-                  ? 'Edit Your Name'
-                  : 'Monthly Budget'}
+                {editorType === 'name' ? 'Edit Your Name' : 'Monthly Budget'}
               </Text>
 
               <TouchableOpacity
+                activeOpacity={0.7}
                 onPress={() => setEditorVisible(false)}>
                 <X size={22} color="#18392B" />
               </TouchableOpacity>
@@ -600,15 +622,15 @@ const ProfileScreen = ({navigation}: Props) => {
                   : 'Enter budget amount'
               }
               placeholderTextColor="#A0AAA4"
-              keyboardType={
-                editorType === 'budget' ? 'numeric' : 'default'
-              }
+              keyboardType={editorType === 'budget' ? 'numeric' : 'default'}
               autoCapitalize="words"
+              maxLength={editorType === 'name' ? 50 : 12}
             />
 
             <View style={styles.modalButtons}>
               <TouchableOpacity
                 style={styles.cancelButton}
+                activeOpacity={0.7}
                 onPress={() => setEditorVisible(false)}
                 disabled={saving}>
                 <Text style={styles.cancelText}>Cancel</Text>
@@ -616,6 +638,7 @@ const ProfileScreen = ({navigation}: Props) => {
 
               <TouchableOpacity
                 style={styles.saveButton}
+                activeOpacity={0.7}
                 onPress={handleSave}
                 disabled={saving}>
                 {saving ? (

@@ -18,20 +18,24 @@ import {
 } from 'lucide-react-native';
 
 import { styles } from './SplashScreen.styles';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getCurrentUser } from '../../storage/authStorage';
+import { checkLocalStorage } from '../../utils/checkStorage';
 import { useSplashAnimation } from './SplashScreen.animation';
 
 import { COLORS } from '../../constants/colors';
 
 const SplashScreen = ({ navigation }: any) => {
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      navigation.replace('Login');
-    }, 3000);
+useEffect(() => {
+  checkLocalStorage();
 
-    return () => clearTimeout(timer);
-  }, [navigation]);
+  const timer = setTimeout(() => {
+    navigation.replace('Login');
+  }, 3000);
+
+  return () => clearTimeout(timer);
+}, [navigation]);
 
   const {
     logoScale,

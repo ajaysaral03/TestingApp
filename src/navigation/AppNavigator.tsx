@@ -11,6 +11,7 @@ import AddTransactionScreen from '../screens/AddTransaction/AddTransactionScreen
 import TransactionsScreen from '../screens/Transactions/TransactionsScreen';
 import AnalyticsScreen from '../screens/Analytics/AnalyticsScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
+import OverallSummaryScreen from '../screens/OverallSummary/OverallSummaryScreen';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -21,6 +22,7 @@ export type RootStackParamList = {
   Transactions: undefined;
   Analytics: undefined;
   Profile: undefined;
+  OverallSummary: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -47,6 +49,7 @@ const AppNavigator = () => {
       <Stack.Screen name="Transactions" component={TransactionsScreen} />
       <Stack.Screen name="Analytics" component={AnalyticsScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Screen name="OverallSummary" component={OverallSummaryScreen} />
     </Stack.Navigator>
   );
 };

@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo, useState } from 'react';
 
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -9,14 +9,13 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-
 import Svg, { Circle } from 'react-native-svg';
-
 import {
   ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
   TrendingDown,
   TrendingUp,
   ChartPie,
@@ -27,32 +26,56 @@ import {
 
 import type { Transaction } from '../../types/transaction';
 import type { RootStackParamList } from '../../navigation/types';
-
 import { getTransactions } from '../../services/transactionService';
-
 import SweetAlert from '../../components/SweetAlert/SweetAlert';
-
 import { styles } from './AnalyticsScreen.styles';
 
 type AlertType = 'success' | 'error' | 'warning' | 'info';
 
-// Currency formatting
 const formatAmount = (amount: number) => {
   const safeAmount = Number.isFinite(amount) ? amount : 0;
-
-  return `₹${safeAmount.toLocaleString('en-IN', {
-    maximumFractionDigits: 2,
-  })}`;
+  return `₹${safeAmount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
 };
 
-// Validate amount
 const getValidAmount = (amount: unknown): number => {
-  const value = Number(amount);
-
+  const value = Number(String(amount ?? '').replace(/[₹,\s]/g, ''));
   return Number.isFinite(value) ? value : 0;
 };
 
-// Category colors
+const getMonthKey = (value: unknown): string | null => {
+  if (!value) return null;
+
+  const raw = String(value).trim();
+
+  // ISO date: YYYY-MM-DD
+  const iso = raw.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+
+  if (iso) {
+    return `${iso[1]}-${String(iso[2]).padStart(2, '0')}`;
+  }
+
+  // Indian date: DD/MM/YYYY or DD-MM-YYYY
+  const indian = raw.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})/);
+
+  if (indian) {
+    const month = Number(indian[2]);
+
+    if (month >= 1 && month <= 12) {
+      return `${indian[3]}-${String(month).padStart(2, '0')}`;
+    }
+  }
+
+  const parsed = new Date(raw);
+
+  if (!Number.isNaN(parsed.getTime())) {
+    return `${parsed.getFullYear()}-${String(
+      parsed.getMonth() + 1,
+    ).padStart(2, '0')}`;
+  }
+
+  return null;
+};
+
 const categoryColors = [
   '#159765',
   '#4389E8',
@@ -75,6 +98,10 @@ const AnalyticsScreen = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [selectedMonth, setSelectedMonth] = useState(
+    () => new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+  );
+
   const [alertData, setAlertData] = useState({
     visible: false,
     title: '',
@@ -82,13 +109,8 @@ const AnalyticsScreen = () => {
     type: 'info' as AlertType,
   });
 
-  // SweetAlert
   const showSweetAlert = useCallback(
-    (
-      title: string,
-      message: string,
-      type: AlertType = 'info',
-    ) => {
+    (title: string, message: string, type: AlertType = 'info') => {
       setAlertData({
         visible: true,
         title,
@@ -99,32 +121,24 @@ const AnalyticsScreen = () => {
     [],
   );
 
-  // Load actual transactions from local storage
+  // Load transactions
   const loadData = useCallback(async () => {
     try {
       setLoading(true);
 
       const data = await getTransactions();
 
-      if (Array.isArray(data)) {
-        setTransactions(data);
-      } else {
-        console.warn('Invalid transaction data received');
-        setTransactions([]);
-      }
+      setTransactions(Array.isArray(data) ? data : []);
     } catch (error: unknown) {
       console.error('Analytics loading error:', error);
 
       setTransactions([]);
 
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'Unable to load saved transactions.';
-
       showSweetAlert(
         'Unable to Load Data',
-        message,
+        error instanceof Error
+          ? error.message
+          : 'Unable to load saved transactions.',
         'error',
       );
     } finally {
@@ -132,24 +146,42 @@ const AnalyticsScreen = () => {
     }
   }, [showSweetAlert]);
 
-  // Refresh whenever Analytics screen gets focus
   useFocusEffect(
     useCallback(() => {
       loadData();
     }, [loadData]),
   );
 
-  // Calculate income, expense and balance
+  // Selected month
+  const selectedMonthKey = `${selectedMonth.getFullYear()}-${String(
+    selectedMonth.getMonth() + 1,
+  ).padStart(2, '0')}`;
+
+  const selectedMonthLabel = selectedMonth.toLocaleDateString('en-IN', {
+    month: 'long',
+    year: 'numeric',
+  });
+
+  // Filter transactions by selected month
+  const monthlyTransactions = useMemo(
+    () =>
+      transactions.filter(
+        item => getMonthKey(item.date) === selectedMonthKey,
+      ),
+    [transactions, selectedMonthKey],
+  );
+
+  // Monthly income, expense and balance
   const summary = useMemo(() => {
-    const income = transactions
-      .filter(item => item.type === 'income')
+    const income = monthlyTransactions
+      .filter(item => String(item.type).toLowerCase() === 'income')
       .reduce(
         (sum, item) => sum + getValidAmount(item.amount),
         0,
       );
 
-    const expenses = transactions
-      .filter(item => item.type === 'expense')
+    const expenses = monthlyTransactions
+      .filter(item => String(item.type).toLowerCase() === 'expense')
       .reduce(
         (sum, item) => sum + getValidAmount(item.amount),
         0,
@@ -160,24 +192,21 @@ const AnalyticsScreen = () => {
       expenses,
       balance: income - expenses,
     };
-  }, [transactions]);
+  }, [monthlyTransactions]);
 
-  // Calculate category-wise expense from saved transactions
+  // Monthly category-wise expenses
   const categoryData = useMemo(() => {
     const totals: Record<string, number> = {};
 
-    transactions
-      .filter(item => item.type === 'expense')
+    monthlyTransactions
+      .filter(item => String(item.type).toLowerCase() === 'expense')
       .forEach(item => {
         const category = item.category?.trim() || 'Other';
-
         const amount = getValidAmount(item.amount);
 
-        if (amount <= 0) {
-          return;
+        if (amount > 0) {
+          totals[category] = (totals[category] || 0) + amount;
         }
-
-        totals[category] = (totals[category] || 0) + amount;
       });
 
     return Object.entries(totals)
@@ -190,17 +219,14 @@ const AnalyticsScreen = () => {
             : 0,
       }))
       .sort((a, b) => b.amount - a.amount);
-  }, [transactions, summary.expenses]);
+  }, [monthlyTransactions, summary.expenses]);
 
-  // Donut chart dimensions
+  // Donut chart
   const chartRadius = 70;
   const chartCircumference = 2 * Math.PI * chartRadius;
 
-  // Dynamic chart segments
   const chartSegments = useMemo(() => {
-    if (summary.expenses <= 0) {
-      return [];
-    }
+    if (summary.expenses <= 0) return [];
 
     let currentOffset = 0;
 
@@ -209,9 +235,7 @@ const AnalyticsScreen = () => {
         (item.amount / summary.expenses) * chartCircumference;
 
       const segment = {
-        category: item.category,
-        amount: item.amount,
-        percentage: item.percentage,
+        ...item,
         color: categoryColors[index % categoryColors.length],
         dashArray: `${segmentLength} ${
           chartCircumference - segmentLength
@@ -225,8 +249,18 @@ const AnalyticsScreen = () => {
     });
   }, [categoryData, summary.expenses, chartCircumference]);
 
-  // Highest expense category
   const highestCategory = categoryData[0];
+
+  // Change selected month
+  const changeMonth = (direction: number) => {
+    setSelectedMonth(current =>
+      new Date(
+        current.getFullYear(),
+        current.getMonth() + direction,
+        1,
+      ),
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -235,8 +269,7 @@ const AnalyticsScreen = () => {
         barStyle="dark-content"
       />
 
-      {/* FIXED HEADER */}
-
+      {/* HEADER */}
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
@@ -247,12 +280,9 @@ const AnalyticsScreen = () => {
         </TouchableOpacity>
 
         <View style={styles.headerText}>
-          <Text style={styles.title}>
-            Analytics
-          </Text>
-
+          <Text style={styles.title}>Analytics</Text>
           <Text style={styles.subtitle}>
-            Your financial overview
+            Monthly financial overview
           </Text>
         </View>
 
@@ -263,33 +293,53 @@ const AnalyticsScreen = () => {
           disabled={loading}
         >
           {loading ? (
-            <ActivityIndicator
-              size="small"
-              color="#159765"
-            />
+            <ActivityIndicator size="small" color="#159765" />
           ) : (
-            <RefreshCw
-              size={19}
-              color="#159765"
-            />
+            <RefreshCw size={19} color="#159765" />
           )}
         </TouchableOpacity>
       </View>
-
-      {/* SCROLLABLE CONTENT */}
 
       <ScrollView
         style={styles.mainScroll}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* BALANCE CARD */}
+        {/* MONTH SELECTOR */}
+        <View style={styles.monthSelector}>
+          <TouchableOpacity
+            style={styles.monthArrow}
+            onPress={() => changeMonth(-1)}
+            activeOpacity={0.7}
+          >
+            <ChevronLeft size={21} color="#176744" />
+          </TouchableOpacity>
 
+          <View style={styles.monthTextWrap}>
+            <Text style={styles.monthCaption}>
+              SELECTED MONTH
+            </Text>
+
+            <Text style={styles.monthTitle}>
+              {selectedMonthLabel}
+            </Text>
+          </View>
+
+          <TouchableOpacity
+            style={styles.monthArrow}
+            onPress={() => changeMonth(1)}
+            activeOpacity={0.7}
+          >
+            <ChevronRight size={21} color="#176744" />
+          </TouchableOpacity>
+        </View>
+
+        {/* MONTHLY BALANCE */}
         <View style={styles.summaryCard}>
           <View style={styles.summaryTop}>
-            <View>
+            <View style={styles.balanceTextWrap}>
               <Text style={styles.summaryLabel}>
-                TOTAL BALANCE
+                MONTHLY BALANCE
               </Text>
 
               <Text style={styles.balance}>
@@ -297,7 +347,7 @@ const AnalyticsScreen = () => {
               </Text>
 
               <Text style={styles.balanceCaption}>
-                Your available balance
+                Savings for {selectedMonthLabel}
               </Text>
             </View>
 
@@ -311,14 +361,11 @@ const AnalyticsScreen = () => {
           <View style={styles.summaryRow}>
             <View style={styles.summaryItem}>
               <View style={styles.incomeIcon}>
-                <TrendingUp
-                  size={17}
-                  color="#9BFFD0"
-                />
+                <TrendingUp size={17} color="#9BFFD0" />
               </View>
 
               <Text style={styles.summarySmall}>
-                Total Income
+                Monthly Income
               </Text>
 
               <Text style={styles.summaryValue}>
@@ -330,14 +377,11 @@ const AnalyticsScreen = () => {
 
             <View style={styles.summaryItem}>
               <View style={styles.expenseIcon}>
-                <TrendingDown
-                  size={17}
-                  color="#FFD4D4"
-                />
+                <TrendingDown size={17} color="#FFD4D4" />
               </View>
 
               <Text style={styles.summarySmall}>
-                Total Expense
+                Monthly Expense
               </Text>
 
               <Text style={styles.summaryValue}>
@@ -347,8 +391,7 @@ const AnalyticsScreen = () => {
           </View>
         </View>
 
-        {/* EXPENSE STATISTICS HEADING */}
-
+        {/* EXPENSE STATISTICS */}
         <View style={styles.sectionHeading}>
           <View style={styles.sectionIcon}>
             <ChartPie size={20} color="#159765" />
@@ -360,28 +403,27 @@ const AnalyticsScreen = () => {
             </Text>
 
             <Text style={styles.sectionSubtitle}>
-              Category-wise spending overview
+              Category-wise spending in {selectedMonthLabel}
             </Text>
           </View>
         </View>
 
-        {/* DYNAMIC DONUT CHART */}
-
+        {/* DONUT CHART */}
         <View style={styles.graphCard}>
           <View style={styles.graphHeader}>
-            <View>
+            <View style={styles.graphHeaderText}>
               <Text style={styles.graphTitle}>
                 Spending Analysis
               </Text>
 
               <Text style={styles.graphSubtitle}>
-                Category-wise expense distribution
+                Monthly expense distribution
               </Text>
             </View>
 
             <View style={styles.graphBadge}>
               <Text style={styles.graphBadgeText}>
-                ALL TIME
+                MONTHLY
               </Text>
             </View>
           </View>
@@ -402,15 +444,16 @@ const AnalyticsScreen = () => {
           ) : chartSegments.length === 0 ? (
             <View style={styles.empty}>
               <View style={styles.emptyIcon}>
-                <ReceiptText size={32} color="#159765" />
+                <ReceiptText size={30} color="#159765" />
               </View>
 
               <Text style={styles.emptyTitle}>
-                No expense data yet
+                No expense data for this month
               </Text>
 
               <Text style={styles.emptyText}>
-                Add your first expense to see your circular chart here.
+                Add an expense in {selectedMonthLabel} to see
+                the monthly chart.
               </Text>
             </View>
           ) : (
@@ -424,8 +467,6 @@ const AnalyticsScreen = () => {
                   {formatAmount(summary.expenses)}
                 </Text>
               </View>
-
-              {/* CIRCULAR GRAPH */}
 
               <View style={styles.donutContainer}>
                 <Svg
@@ -459,11 +500,9 @@ const AnalyticsScreen = () => {
                   ))}
                 </Svg>
 
-                {/* CENTER TOTAL */}
-
                 <View style={styles.donutCenter}>
                   <Text style={styles.donutCenterLabel}>
-                    TOTAL EXPENSE
+                    MONTHLY EXPENSE
                   </Text>
 
                   <Text style={styles.donutCenterAmount}>
@@ -477,14 +516,13 @@ const AnalyticsScreen = () => {
               </View>
 
               <Text style={styles.graphHint}>
-                Your actual spending by category
+                Spending breakdown for {selectedMonthLabel}
               </Text>
             </>
           )}
         </View>
 
-        {/* CATEGORY BREAKDOWN HEADING */}
-
+        {/* CATEGORY BREAKDOWN */}
         <View style={styles.sectionHeading}>
           <View style={styles.sectionIcon}>
             <ChartPie size={19} color="#159765" />
@@ -496,12 +534,10 @@ const AnalyticsScreen = () => {
             </Text>
 
             <Text style={styles.sectionSubtitle}>
-              Detailed expense distribution
+              Monthly expense details
             </Text>
           </View>
         </View>
-
-        {/* CATEGORY BREAKDOWN */}
 
         <View style={styles.chartCard}>
           {loading ? (
@@ -519,22 +555,21 @@ const AnalyticsScreen = () => {
               </Text>
 
               <Text style={styles.emptyText}>
-                Your category breakdown will appear after adding expenses.
+                Category details for {selectedMonthLabel}
+                will appear here.
               </Text>
             </View>
           ) : (
             <>
               <View style={styles.totalHeader}>
                 <Text style={styles.totalLabel}>
-                  Total Expenses
+                  Total Monthly Expenses
                 </Text>
 
                 <Text style={styles.totalAmount}>
                   {formatAmount(summary.expenses)}
                 </Text>
               </View>
-
-              {/* ACTUAL CATEGORY LEGEND */}
 
               {chartSegments.map(segment => (
                 <View
@@ -587,13 +622,9 @@ const AnalyticsScreen = () => {
         </View>
 
         {/* SPENDING INSIGHT */}
-
         <View style={styles.noteCard}>
           <View style={styles.insightIcon}>
-            <TrendingUp
-              size={20}
-              color="#087C50"
-            />
+            <TrendingUp size={20} color="#087C50" />
           </View>
 
           <View style={styles.insightContent}>
@@ -603,26 +634,18 @@ const AnalyticsScreen = () => {
 
             <Text style={styles.noteText}>
               {loading
-                ? 'Calculating your spending insights...'
+                ? 'Calculating your monthly spending insights...'
                 : highestCategory
-                  ? `${highestCategory.category} is your highest expense category. You spent ${formatAmount(
-                      highestCategory.amount,
-                    )} (${highestCategory.percentage.toFixed(
-                      1,
-                    )}% of your total expenses) in this category.`
-                  : 'Your spending insights will appear here after adding expenses.'}
+                  ? `${highestCategory.category} is your highest expense category in ${selectedMonthLabel}. You spent ${formatAmount(highestCategory.amount)} (${highestCategory.percentage.toFixed(1)}% of monthly expenses) in this category.`
+                  : `Your spending insights for ${selectedMonthLabel} will appear after adding expenses.`}
             </Text>
           </View>
         </View>
 
-        {/* FOOTER */}
-
         <Text style={styles.footerText}>
-          Your financial summary is based on saved transactions.
+          Showing transactions for {selectedMonthLabel} only.
         </Text>
       </ScrollView>
-
-      {/* SWEET ALERT */}
 
       <SweetAlert
         visible={alertData.visible}

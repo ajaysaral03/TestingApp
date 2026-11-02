@@ -9,17 +9,18 @@ export const styles = StyleSheet.create({
     backgroundColor: '#F3F8F5',
   },
 
-  // Header
+  // HEADER
   header: {
-    height: 76,
-    marginTop:35,
+    minHeight: 80,
+    marginTop: 37,
     marginHorizontal: 18,
-    marginBottom: 12,
+    marginBottom: 8,
     position: 'relative',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+
   backButton: {
     width: 44,
     height: 44,
@@ -30,6 +31,7 @@ export const styles = StyleSheet.create({
     elevation: 2,
     zIndex: 2,
   },
+
   headerCenter: {
     position: 'absolute',
     left: 50,
@@ -37,18 +39,21 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
   title: {
     fontSize: 22,
     fontWeight: '900',
     color: '#18392B',
     textAlign: 'center',
   },
+
   subtitle: {
     fontSize: 10,
     color: '#89968E',
     marginTop: 4,
     textAlign: 'center',
   },
+
   refreshButton: {
     width: 43,
     height: 43,
@@ -59,37 +64,145 @@ export const styles = StyleSheet.create({
     zIndex: 2,
   },
 
-  // List
+  // SEARCH BAR
+  searchSection: {
+    marginHorizontal: 18,
+    marginBottom: 12,
+    marginTop: 0,
+  },
+
+  searchContainer: {
+    height: 52,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#E5EEE8',
+    paddingHorizontal: 13,
+    flexDirection: 'row',
+    alignItems: 'center',
+    elevation: 2,
+  },
+
+  searchInput: {
+    flex: 1,
+    minWidth: 0,
+    height: 48,
+    marginLeft: 10,
+    fontSize: 14,
+    color: '#18392B',
+    paddingVertical: 0,
+    includeFontPadding: false,
+  },
+
+  searchClearButton: {
+    width: 30,
+    height: 32,
+    borderRadius: 9,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F0F5F1',
+    marginRight: 5,
+  },
+
+  searchFilterButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: '#159765',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 5,
+    position: 'relative',
+  },
+
+  filterBadge: {
+    position: 'absolute',
+    right: -5,
+    top: -5,
+    minWidth: 19,
+    height: 19,
+    borderRadius: 10,
+    backgroundColor: '#E85C68',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 3,
+  },
+
+  filterBadgeText: {
+    fontSize: 9,
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
+
+  // ACTIVE FILTERS
+  activeFilters: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginHorizontal: 18,
+    marginBottom: 12,
+  },
+
+  activeFilterChip: {
+    backgroundColor: '#E1F5E9',
+    paddingHorizontal: 11,
+    paddingVertical: 7,
+    borderRadius: 9,
+  },
+
+  activeFilterText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#159765',
+  },
+
+  clearFiltersText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#E85C68',
+    padding: 5,
+  },
+
+  // LIST
   listContent: {
     paddingHorizontal: 18,
-    paddingTop: 5,
+    paddingTop: 8,
     paddingBottom: 35,
   },
+
   emptyListContent: {
     flexGrow: 1,
   },
 
-  // Summary cards
+  // SUMMARY
   summaryContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: 12,
     marginBottom: 16,
   },
+
   summaryCard: {
     flex: 1,
-    minHeight: 125,
+    minWidth: 0,
+    minHeight: 115,
     borderRadius: 20,
     padding: 15,
     justifyContent: 'space-between',
     elevation: 2,
   },
+
   incomeCard: {
     backgroundColor: '#E5F7ED',
   },
+
   expenseCard: {
     backgroundColor: '#FCEBED',
   },
+
   summaryIcon: {
     width: 36,
     height: 36,
@@ -98,12 +211,73 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
   summaryLabel: {
     fontSize: 13,
     fontWeight: '600',
     color: '#66766D',
     marginTop: 8,
   },
+
+
+  dateOptions: {
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  gap: 9,
+},
+
+dateOption: {
+  paddingHorizontal: 13,
+  paddingVertical: 11,
+  borderRadius: 11,
+  borderWidth: 1,
+  borderColor: '#E3ECE6',
+  backgroundColor: '#FAFCFA',
+  alignItems: 'center',
+  justifyContent: 'center',
+},
+
+dateOptionActive: {
+  backgroundColor: '#159765',
+  borderColor: '#159765',
+},
+
+dateOptionText: {
+  fontSize: 11,
+  fontWeight: '700',
+  color: '#52645A',
+},
+
+dateOptionTextActive: {
+  color: '#FFFFFF',
+},
+
+inputLabel: {
+  fontSize: 12,
+  fontWeight: '800',
+  color: '#52645A',
+  marginTop: 15,
+  marginBottom: 8,
+},
+
+input: {
+  height: 46,
+  borderWidth: 1,
+  borderColor: '#DDE9E1',
+  backgroundColor: '#FAFCFA',
+  borderRadius: 12,
+  paddingHorizontal: 13,
+  fontSize: 14,
+  color: '#18392B',
+},
+
+hint: {
+  fontSize: 11,
+  color: '#89968E',
+  marginTop: 9,
+  marginBottom: 5,
+},
+
   summaryAmount: {
     fontSize: width < 370 ? 16 : 19,
     fontWeight: '900',
@@ -111,7 +285,7 @@ export const styles = StyleSheet.create({
     marginTop: 5,
   },
 
-  // Transaction count
+  // TRANSACTION COUNT
   countCard: {
     minHeight: 78,
     backgroundColor: '#FFFFFF',
@@ -123,6 +297,7 @@ export const styles = StyleSheet.create({
     marginBottom: 22,
     elevation: 2,
   },
+
   countIcon: {
     width: 43,
     height: 43,
@@ -131,101 +306,54 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
   countDetails: {
     flex: 1,
     marginLeft: 12,
   },
+
   countTitle: {
     fontSize: 14,
     fontWeight: '800',
     color: '#18392B',
   },
+
   countSubtitle: {
     fontSize: 10,
     color: '#89968E',
     marginTop: 4,
   },
+
   countNumber: {
     fontSize: 23,
     fontWeight: '900',
     color: '#159765',
   },
 
-  // Filter
-  filterSection: {
-    marginBottom: 20,
-  },
-  filterHeading: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 11,
-  },
-  filterHeadingLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  filterTitle: {
-    fontSize: 15,
-    fontWeight: '800',
-    color: '#18392B',
-  },
-  dropdownButton: {
-    minHeight: 70,
-    borderRadius: 17,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#E5EEE8',
-    paddingHorizontal: 14,
-    flexDirection: 'row',
-    alignItems: 'center',
-    elevation: 2,
-  },
-  dropdownIcon: {
-    width: 42,
-    height: 42,
-    borderRadius: 13,
-    backgroundColor: '#E5F7ED',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  dropdownTextContainer: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  dropdownLabel: {
-    fontSize: 10,
-    color: '#89968E',
-    fontWeight: '600',
-  },
-  dropdownValue: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: '#18392B',
-    marginTop: 4,
-  },
-
-  // Filtered heading
+  // FILTERED HEADER
   filteredHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 13,
   },
+
   filteredHeaderDetails: {
     flex: 1,
   },
+
   filteredTitle: {
     fontSize: 17,
     fontWeight: '900',
     color: '#18392B',
   },
+
   filteredSubtitle: {
     fontSize: 11,
     color: '#89968E',
     marginTop: 4,
   },
+
   filteredCount: {
     minWidth: 34,
     height: 34,
@@ -236,13 +364,14 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 8,
     marginLeft: 10,
   },
+
   filteredCountText: {
     fontSize: 13,
     fontWeight: '900',
     color: '#159765',
   },
 
-  // Transaction card
+  // TRANSACTION CARD
   transactionCard: {
     minHeight: 94,
     backgroundColor: '#FFFFFF',
@@ -254,6 +383,7 @@ export const styles = StyleSheet.create({
     marginBottom: 12,
     elevation: 2,
   },
+
   transactionIcon: {
     width: 46,
     height: 46,
@@ -261,49 +391,64 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
   incomeIconBg: {
     backgroundColor: '#E5F7ED',
   },
+
   expenseIconBg: {
     backgroundColor: '#FCEBED',
   },
+
   details: {
     flex: 1,
     marginLeft: 11,
     marginRight: 5,
   },
+
   transactionTitle: {
-    fontSize: 13,
+    fontSize: width < 360 ? 12 : 13,
     fontWeight: '800',
     color: '#18392B',
+    flexShrink: 1,
   },
+
   transactionMeta: {
     fontSize: 10,
     color: '#89968E',
     marginTop: 4,
+    flexShrink: 1,
   },
+
   dateText: {
     fontSize: 10,
     color: '#A1ADA5',
     marginTop: 5,
   },
+
   amountSection: {
     alignItems: 'flex-end',
     justifyContent: 'center',
-    minWidth: 100,
+    minWidth: 78,
+    maxWidth: 112,
+    flexShrink: 0,
   },
+
   amount: {
-    fontSize: 12,
+    fontSize: width < 360 ? 10 : 12,
     fontWeight: '900',
+    flexShrink: 1,
+    textAlign: 'right',
   },
+
   income: {
     color: '#159765',
   },
+
   expense: {
     color: '#E85C68',
   },
 
-  // Edit and Delete buttons
   actionRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -311,6 +456,7 @@ export const styles = StyleSheet.create({
     gap: 9,
     marginTop: 10,
   },
+
   editButton: {
     width: 34,
     height: 32,
@@ -321,6 +467,7 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#D4EFDF',
   },
+
   deleteButton: {
     width: 34,
     height: 32,
@@ -332,19 +479,20 @@ export const styles = StyleSheet.create({
     borderColor: '#FADADD',
   },
 
-  // Loading
+  // LOADING
   loadingContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
+
   loadingText: {
     fontSize: 13,
     color: '#89968E',
     marginTop: 12,
   },
 
-  // Empty state
+  // EMPTY
   empty: {
     flex: 1,
     alignItems: 'center',
@@ -352,6 +500,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 25,
     paddingTop: 35,
   },
+
   emptyIcon: {
     width: 75,
     height: 75,
@@ -361,12 +510,14 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 17,
   },
+
   emptyTitle: {
     fontSize: 17,
     fontWeight: '900',
     color: '#18392B',
     textAlign: 'center',
   },
+
   emptyText: {
     fontSize: 12,
     lineHeight: 19,
@@ -375,41 +526,21 @@ export const styles = StyleSheet.create({
     marginTop: 8,
   },
 
-  // Category dropdown modal
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.42)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 22,
+  emptyResetButton: {
+    backgroundColor: '#159765',
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderRadius: 12,
+    marginTop: 18,
   },
-  dropdownModal: {
-    width: '100%',
-    maxHeight: '75%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 23,
-    padding: 18,
-    elevation: 10,
+
+  emptyResetText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#FFFFFF',
   },
-  modalHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingBottom: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#EEF2EF',
-    marginBottom: 10,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: '900',
-    color: '#18392B',
-  },
-  modalSubtitle: {
-    fontSize: 11,
-    color: '#89968E',
-    marginTop: 5,
-  },
+
+  // COMMON MODAL CLOSE
   modalClose: {
     width: 36,
     height: 36,
@@ -418,50 +549,197 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  dropdownOptions: {
-    maxHeight: 380,
+
+  // FILTER MODAL
+  filterModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.48)',
+    justifyContent: 'flex-end',
   },
-  dropdownOption: {
-    minHeight: 57,
+
+  filterModal: {
+    width: '100%',
+    maxHeight: '85%',
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    padding: 20,
+    paddingBottom: 30,
+  },
+
+  filterModalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingBottom: 17,
+    borderBottomWidth: 1,
+    borderBottomColor: '#EEF2EF',
+    marginBottom: 12,
+  },
+
+  filterModalTitle: {
+    fontSize: 19,
+    fontWeight: '900',
+    color: '#18392B',
+  },
+
+  filterModalSubtitle: {
+    fontSize: 11,
+    color: '#89968E',
+    marginTop: 5,
+  },
+
+  filterModalLabel: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#18392B',
+    marginTop: 17,
+    marginBottom: 12,
+  },
+
+  filterTypeRow: {
+    flexDirection: 'row',
+    gap: 9,
+  },
+
+  filterTypeButton: {
+    flex: 1,
+    height: 43,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E3ECE6',
+    backgroundColor: '#FAFCFA',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 5,
+  },
+
+  filterTypeActive: {
+    backgroundColor: '#159765',
+    borderColor: '#159765',
+  },
+
+  filterTypeText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#52645A',
+  },
+
+  filterTypeTextActive: {
+    color: '#FFFFFF',
+  },
+
+  filterCategoryList: {
+    gap: 8,
+    paddingBottom: 8,
+  },
+
+  filterCategoryItem: {
+    minHeight: 55,
+    paddingHorizontal: 12,
+    borderRadius: 13,
+    borderWidth: 1,
+    borderColor: '#E9EFEB',
+    backgroundColor: '#FFFFFF',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 9,
-    borderRadius: 14,
-    marginBottom: 6,
+    justifyContent: 'space-between',
   },
-  selectedDropdownOption: {
+
+  filterCategoryActive: {
     backgroundColor: '#EAF7EF',
+    borderColor: '#B8E5CA',
   },
-  optionIcon: {
-    width: 38,
-    height: 38,
-    borderRadius: 12,
+
+  filterCategoryLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+
+  filterCategoryIcon: {
+    width: 35,
+    height: 35,
+    borderRadius: 10,
     backgroundColor: '#F1F5F2',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  selectedOptionIcon: {
-    backgroundColor: '#D7F0E1',
-  },
-  optionText: {
-    flex: 1,
+
+  filterCategoryText: {
     fontSize: 13,
     fontWeight: '600',
     color: '#52645A',
-    marginLeft: 12,
+    marginLeft: 11,
   },
-  selectedOptionText: {
+
+  filterCategoryTextActive: {
     color: '#159765',
     fontWeight: '900',
   },
-  optionCount: {
+
+  filterCategoryRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 9,
+  },
+
+  filterCategoryCount: {
     fontSize: 12,
     fontWeight: '800',
     color: '#89968E',
-    marginRight: 5,
   },
 
-  // Edit transaction modal
+  filterCheck: {
+    width: 22,
+    height: 22,
+    borderRadius: 7,
+    backgroundColor: '#159765',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  filterModalActions: {
+    flexDirection: 'row',
+    gap: 11,
+    marginTop: 18,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#EEF2EF',
+  },
+
+  filterResetButton: {
+    flex: 1,
+    height: 48,
+    borderRadius: 13,
+    backgroundColor: '#EEF3EF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  filterResetText: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#52645A',
+  },
+
+  filterApplyButton: {
+    flex: 1.6,
+    height: 48,
+    borderRadius: 13,
+    backgroundColor: '#159765',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  filterApplyText: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#FFFFFF',
+  },
+
+  // EDIT MODAL
   editOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.48)',
@@ -469,6 +747,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 18,
   },
+
   editModal: {
     width: '100%',
     maxHeight: '92%',
@@ -477,22 +756,26 @@ export const styles = StyleSheet.create({
     padding: 19,
     elevation: 10,
   },
+
   editModalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 17,
   },
+
   editModalTitle: {
     fontSize: 19,
     fontWeight: '900',
     color: '#18392B',
   },
+
   editModalSubtitle: {
     fontSize: 11,
     color: '#89968E',
     marginTop: 4,
   },
+
   editLabel: {
     fontSize: 12,
     fontWeight: '800',
@@ -500,6 +783,7 @@ export const styles = StyleSheet.create({
     marginBottom: 7,
     marginTop: 10,
   },
+
   editInput: {
     minHeight: 46,
     borderWidth: 1,
@@ -510,17 +794,18 @@ export const styles = StyleSheet.create({
     fontSize: 13,
     color: '#18392B',
   },
+
   descriptionInput: {
     minHeight: 65,
     textAlignVertical: 'top',
     paddingTop: 12,
   },
 
-  // Income / Expense selection
   typeRow: {
     flexDirection: 'row',
     gap: 10,
   },
+
   typeButton: {
     flex: 1,
     height: 44,
@@ -533,29 +818,33 @@ export const styles = StyleSheet.create({
     gap: 7,
     backgroundColor: '#FFFFFF',
   },
+
   incomeTypeSelected: {
     backgroundColor: '#159765',
     borderColor: '#159765',
   },
+
   expenseTypeSelected: {
     backgroundColor: '#E53945',
     borderColor: '#E53945',
   },
+
   typeButtonText: {
     fontSize: 12,
     fontWeight: '800',
     color: '#52645A',
   },
+
   typeButtonTextSelected: {
     color: '#FFFFFF',
   },
 
-  // Edit modal actions
   editActions: {
     flexDirection: 'row',
     gap: 10,
     marginTop: 20,
   },
+
   editCancelButton: {
     flex: 1,
     height: 47,
@@ -564,11 +853,13 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
   editCancelText: {
     fontSize: 12,
     fontWeight: '800',
     color: '#52645A',
   },
+
   editSaveButton: {
     flex: 1.5,
     height: 47,
@@ -577,6 +868,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
   editSaveText: {
     fontSize: 12,
     fontWeight: '800',

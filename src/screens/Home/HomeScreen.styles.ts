@@ -1,545 +1,186 @@
-
 import { StyleSheet, Dimensions } from 'react-native';
 
 const { width } = Dimensions.get('window');
+const compact = width < 370;
 
 export const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#F3F8F5' },
+  headerWrapper: { zIndex: 2 },
+  animatedContent: { flex: 1 },
+  scrollContent: { paddingHorizontal: 18, paddingTop: 12, paddingBottom: 28 },
+  bottomSpace: { height: 18 },
+  loadingContainer: { minHeight: 300, alignItems: 'center', justifyContent: 'center' },
+  loadingText: { marginTop: 12, color: '#89968E', fontSize: 13 },
 
-  // Main screen
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F8F6',
-  },
-
-headerWrapper: {
-  width: '100%',
-  paddingHorizontal: 0,
-  paddingTop: 8,
-  paddingBottom: 0,
-  margin: 0,
-  backgroundColor: '#F5F8F6',
-     paddingVertical: Platform.OS === 'android' ? 10 : 8,
-  zIndex: 2,
-},
-  animatedContent: {
-    flex: 1,
-  },
-
-  scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: 12,
-    paddingBottom: 30,
-  },
-
-  loadingContainer: {
-    paddingVertical: 70,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  loadingText: {
-    color: '#89968E',
-    marginTop: 12,
-    fontSize: 12,
-  },
-
-  // Balance Card
   balanceCard: {
-    width: '100%',
-    minHeight: 195,
-    borderRadius: 26,
-    backgroundColor: '#087C50',
-    padding: 23,
-    marginBottom: 22,
-    overflow: 'hidden',
-    elevation: 7,
-    shadowColor: '#087C50',
-    shadowOpacity: 0.20,
-    shadowRadius: 14,
-    shadowOffset: { width: 0, height: 6 },
+    borderRadius: 23, padding: 20,
+    marginBottom: 17, overflow: 'hidden', elevation: 4,
   },
-
-  balanceTop: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-
-  balanceLabel: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#E6FFF1',
-  },
-
-  balanceSubLabel: {
-    fontSize: 11,
-    color: '#C6EBDD',
-    marginTop: 5,
-  },
-
+  balanceTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  balanceLabel: { color: '#FFFFFF', fontSize: 14, fontWeight: '800' },
+  balanceSubLabel: { color: '#D8F9E7', fontSize: 11, marginTop: 4 },
   eyeButton: {
-    width: 39,
-    height: 39,
-    borderRadius: 13,
-    backgroundColor: 'rgba(0,0,0,0.17)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: 38, height: 38, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.17)',
+    alignItems: 'center', justifyContent: 'center',
   },
+  balanceAmount: { color: '#FFFFFF', fontSize: compact ? 27 : 32, fontWeight: '900', marginTop: 17 },
+  balanceBottom: { flexDirection: 'row', alignItems: 'center', marginTop: 13, gap: 7 },
+  balanceBottomText: { color: '#D8F9E7', fontSize: 11, fontWeight: '600' },
+  balanceDecoration: { position: 'absolute', right: -8, bottom: -22 },
 
-  balanceAmount: {
-    fontSize: width < 360 ? 29 : 36,
-    fontWeight: '900',
-    color: '#FFFFFF',
-    marginTop: 19,
-    letterSpacing: -1,
-  },
-
-  balanceBottom: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginTop: 17,
-  },
-
-  balanceBottomText: {
-    fontSize: 11,
-    color: '#D8F9E7',
-    fontWeight: '600',
-  },
-
-  balanceDecoration: {
-    position: 'absolute',
-    right: 15,
-    bottom: 12,
-    transform: [{ rotate: '-15deg' }],
-  },
-
-  // Income and Expense Summary
-  summaryRow: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 29,
-  },
-
+  summaryRow: { flexDirection: 'row', gap: 12, marginBottom: 22 },
   summaryCard: {
-    flex: 1,
-    minWidth: 0,
-    minHeight: 150,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 21,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: '#E9F0EB',
-    elevation: 3,
-    shadowColor: '#18392B',
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 3 },
+    flex: 1, minWidth: 0, backgroundColor: '#FFFFFF', borderRadius: 18,
+    padding: compact ? 12 : 15, elevation: 2,
   },
+  summaryCardTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  incomeIconBox: { width: 38, height: 38, borderRadius: 12, backgroundColor: '#E5F7ED', alignItems: 'center', justifyContent: 'center' },
+  expenseIconBox: { width: 38, height: 38, borderRadius: 12, backgroundColor: '#FFF0F1', alignItems: 'center', justifyContent: 'center' },
+  summaryBadgeIncome: { color: '#159765', fontSize: 9, fontWeight: '900' },
+  summaryBadgeExpense: { color: '#EF6672', fontSize: 9, fontWeight: '900' },
+  summaryLabel: { color: '#66766D', fontSize: 12, fontWeight: '700', marginTop: 13 },
+  summaryAmount: { color: '#18392B', fontSize: compact ? 16 : 19, fontWeight: '900', marginTop: 5 },
+  summaryBottom: { flexDirection: 'row', alignItems: 'center', marginTop: 9, gap: 3 },
+  summaryBottomIncome: { color: '#159765', fontSize: 10, fontWeight: '600' },
+  summaryBottomExpense: { color: '#EF6672', fontSize: 10, fontWeight: '600' },
 
-  summaryCardTop: {
+  periodSection: { marginTop: 2, marginBottom: 23 },
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 13 },
+  sectionTitle: { color: '#18392B', fontSize: 17, fontWeight: '900' },
+  sectionSubtitle: { color: '#89968E', fontSize: 11, marginTop: 4 },
+  periodIcon: { width: 42, height: 42, borderRadius: 14, backgroundColor: '#E5F7ED', alignItems: 'center', justifyContent: 'center' },
+
+  monthPagination: {
+    minHeight: 62, backgroundColor: '#FFFFFF', borderRadius: 16, paddingHorizontal: 10,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    marginBottom: 12, elevation: 1,
+  },
+  monthPageButton: { width: 40, height: 40, borderRadius: 12, backgroundColor: '#EAF7EF', alignItems: 'center', justifyContent: 'center' },
+  monthPageButtonDisabled: { backgroundColor: '#F2F5F3' },
+  monthPageTitleWrap: { flex: 1, alignItems: 'center' },
+  monthPageTitle: { color: '#18392B', fontSize: 15, fontWeight: '900' },
+  monthPageSubtitle: { color: '#89968E', fontSize: 10, marginTop: 3 },
+
+  monthlyOverviewCard: { borderRadius: 19, padding: 16, elevation: 2, overflow: 'hidden' },
+  monthlyOverviewTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  monthlyOverviewLabel: { color: '#FFFFFF', fontSize: 12, fontWeight: '700' },
+  monthlyOverviewBalance: { color: '#FFFFFF', fontSize: compact ? 24 : 28, fontWeight: '900', marginTop: 6 },
+  negativeSaving: { color: '#FFFFFF' },
+  monthlyOverviewCaption: { color: 'rgba(255,255,255,0.88)', fontSize: 10, marginTop: 5 },
+  monthSavingIcon: { width: 46, height: 46, borderRadius: 15, backgroundColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center' },
+  monthlyOverviewDivider: { height: 1, backgroundColor: 'rgba(255,255,255,0.28)', marginVertical: 15 },
+  monthStatsRow: { flexDirection: 'row', alignItems: 'center' },
+  monthStat: { flex: 1, minWidth: 0 },
+  monthStatHeading: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  monthStatLabel: { color: 'rgba(255,255,255,0.88)', fontSize: 11, fontWeight: '600' },
+  monthIncomeValue: { color: '#FFFFFF', fontSize: compact ? 14 : 16, fontWeight: '900', marginTop: 7 },
+  monthExpenseValue: { color: '#FFFFFF', fontSize: compact ? 14 : 16, fontWeight: '900', marginTop: 7 },
+  monthStatDivider: { width: 1, height: 42, backgroundColor: 'rgba(255,255,255,0.28)', marginHorizontal: 13 },
+  periodEmptyCard: { backgroundColor: '#FFFFFF', borderRadius: 16, padding: 20, alignItems: 'center', marginTop: 12 },
+  periodEmptyTitle: { color: '#18392B', fontSize: 13, fontWeight: '800', marginTop: 10 },
+  periodEmptyText: { color: '#89968E', fontSize: 11, lineHeight: 17, textAlign: 'center', marginTop: 5 },
+
+  quickActions: { flexDirection: 'row', justifyContent: 'space-between', gap: 10, marginBottom: 23 },
+  actionItem: { flex: 1, minWidth: 0, backgroundColor: '#FFFFFF', borderRadius: 16, paddingVertical: 14, alignItems: 'center', elevation: 1 },
+  incomeAction: { width: 43, height: 43, borderRadius: 14, backgroundColor: '#159765', alignItems: 'center', justifyContent: 'center' },
+  expenseAction: { width: 43, height: 43, borderRadius: 14, backgroundColor: '#E85C68', alignItems: 'center', justifyContent: 'center' },
+  analyticsAction: { width: 43, height: 43, borderRadius: 14, backgroundColor: '#5976C8', alignItems: 'center', justifyContent: 'center' },
+  actionText: { color: '#18392B', fontSize: 11, fontWeight: '800', marginTop: 9 },
+  actionDescription: { color: '#89968E', fontSize: 9, marginTop: 3 },
+
+  seeAllButton: { flexDirection: 'row', alignItems: 'center', gap: 3, padding: 5 },
+  seeAllText: { color: '#159765', fontSize: 11, fontWeight: '800' },
+  transactionCard: { backgroundColor: '#FFFFFF', borderRadius: 18, paddingHorizontal: 13, paddingVertical: 4, marginBottom: 20, elevation: 2 },
+  transactionItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 13, borderBottomWidth: 1, borderBottomColor: '#EEF2EF' },
+  lastTransaction: { borderBottomWidth: 0 },
+  transactionIcon: { width: 42, height: 42, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
+  transactionDetails: { flex: 1, minWidth: 0, marginLeft: 11, marginRight: 7 },
+  transactionTitle: { color: '#18392B', fontSize: 12, fontWeight: '800' },
+  transactionMeta: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 5 },
+  transactionDate: { color: '#98A69D', fontSize: 10 },
+  transactionDescription: { color: '#89968E', fontSize: 10, marginTop: 4 },
+  transactionAmount: { maxWidth: '38%', fontSize: compact ? 11 : 12, fontWeight: '900', textAlign: 'right' },
+  incomeAmount: { color: '#159765' },
+  expenseAmount: { color: '#E85C68' },
+  emptyContainer: { alignItems: 'center', paddingHorizontal: 18, paddingVertical: 27 },
+  emptyIcon: { width: 58, height: 58, borderRadius: 19, backgroundColor: '#E5F7ED', alignItems: 'center', justifyContent: 'center' },
+  emptyTitle: { color: '#18392B', fontSize: 14, fontWeight: '900', marginTop: 12 },
+  emptyText: { color: '#89968E', fontSize: 11, textAlign: 'center', lineHeight: 17, marginTop: 6 },
+  emptyButton: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#159765', borderRadius: 11, paddingHorizontal: 14, paddingVertical: 10, marginTop: 14 },
+  emptyButtonText: { color: '#FFFFFF', fontSize: 11, fontWeight: '800' },
+
+
+  overallSummaryButton: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-
-  incomeIconBox: {
-    width: 43,
-    height: 43,
-    borderRadius: 14,
-    backgroundColor: '#E5F7ED',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  expenseIconBox: {
-    width: 43,
-    height: 43,
-    borderRadius: 14,
-    backgroundColor: '#FFF0F1',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  summaryBadgeIncome: {
-    fontSize: 8,
-    fontWeight: '900',
-    color: '#159765',
-    backgroundColor: '#E5F7ED',
-    paddingHorizontal: 7,
-    paddingVertical: 5,
-    borderRadius: 7,
-  },
-
-  summaryBadgeExpense: {
-    fontSize: 8,
-    fontWeight: '900',
-    color: '#EF6672',
-    backgroundColor: '#FFF0F1',
-    paddingHorizontal: 7,
-    paddingVertical: 5,
-    borderRadius: 7,
-  },
-
-  summaryLabel: {
-    fontSize: 11,
-    color: '#89968E',
-    marginBottom: 7,
-    fontWeight: '600',
-  },
-
-  summaryAmount: {
-    fontSize: 19,
-    fontWeight: '900',
-    color: '#18392B',
-  },
-
-  summaryBottom: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    marginTop: 12,
-  },
-
-  summaryBottomIncome: {
-    fontSize: 9,
-    color: '#159765',
-    fontWeight: '700',
-  },
-
-  summaryBottomExpense: {
-    fontSize: 9,
-    color: '#EF6672',
-    fontWeight: '700',
-  },
-
-  // Section Headings
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-
-  sectionTitle: {
-    fontSize: 17,
-    fontWeight: '900',
-    color: '#18392B',
-  },
-
-  sectionSubtitle: {
-    fontSize: 10,
-    color: '#89968E',
-    marginTop: 4,
-  },
-
-  // Quick Actions
-  quickActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 10,
-    marginTop: 3,
-    marginBottom: 30,
-  },
-
-  actionItem: {
-    flex: 1,
-    minWidth: 0,
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
-    borderRadius: 18,
-    paddingVertical: 15,
-    paddingHorizontal: 4,
-    borderWidth: 1,
-    borderColor: '#EAF1EC',
-    elevation: 2,
-    shadowColor: '#18392B',
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-  },
-
-  incomeAction: {
-    width: 49,
-    height: 49,
-    borderRadius: 16,
-    backgroundColor: '#16B979',
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 3,
-    shadowColor: '#16B979',
-    shadowOpacity: 0.2,
-    shadowRadius: 7,
-    shadowOffset: { width: 0, height: 3 },
-  },
-
-  expenseAction: {
-    width: 49,
-    height: 49,
-    borderRadius: 16,
-    backgroundColor: '#F2767D',
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 3,
-  },
-
-  analyticsAction: {
-    width: 49,
-    height: 49,
-    borderRadius: 16,
-    backgroundColor: '#4389E8',
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 3,
-  },
-
-  actionText: {
-    fontSize: 10,
-    fontWeight: '800',
-    color: '#18392B',
-    marginTop: 10,
-    textAlign: 'center',
-  },
-
-  actionDescription: {
-    fontSize: 9,
-    color: '#89968E',
-    marginTop: 4,
-    textAlign: 'center',
-  },
-
-  // See All
-  seeAllButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 2,
-  },
-
-  seeAllText: {
-    fontSize: 12,
-    fontWeight: '800',
-    color: '#159765',
-  },
-
-  // Recent Transactions Card
-  transactionCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 22,
-    paddingHorizontal: 15,
-    paddingVertical: 5,
-    marginBottom: 29,
-    borderWidth: 1,
-    borderColor: '#EAF1EC',
-    elevation: 3,
-    shadowColor: '#18392B',
-    shadowOpacity: 0.04,
-    shadowRadius: 9,
-    shadowOffset: { width: 0, height: 3 },
-  },
-
-  transactionItem: {
-    minHeight: 78,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#F0F4F1',
-    gap: 11,
-    paddingVertical: 10,
-  },
-
-  lastTransaction: {
-    borderBottomWidth: 0,
-  },
-
-  transactionIcon: {
-    width: 46,
-    height: 46,
-    borderRadius: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  transactionDetails: {
-    flex: 1,
-    justifyContent: 'center',
-    minWidth: 0,
-  },
-
-  transactionTitle: {
-    fontSize: 13,
-    fontWeight: '800',
-    color: '#18392B',
-    marginBottom: 5,
-  },
-
-  transactionMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-  },
-
-  transactionDate: {
-    fontSize: 10,
-    color: '#89968E',
-  },
-
-  transactionDescription: {
-    fontSize: 10,
-    color: '#A0AAA4',
-    marginTop: 4,
-  },
-
-  transactionAmount: {
-    fontSize: 12,
-    fontWeight: '900',
-    flexShrink: 0,
-  },
-
-  incomeAmount: {
-    color: '#159765',
-  },
-
-  expenseAmount: {
-    color: '#F16D76',
-  },
-
-  // Empty State
-  emptyContainer: {
-    minHeight: 220,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 25,
-  },
-
-  emptyIcon: {
-    width: 62,
-    height: 62,
-    borderRadius: 20,
-    backgroundColor: '#E5F7ED',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 14,
-  },
-
-  emptyTitle: {
-    fontSize: 15,
-    fontWeight: '900',
-    color: '#18392B',
-    marginBottom: 7,
-  },
-
-  emptyText: {
-    fontSize: 11,
-    color: '#89968E',
-    textAlign: 'center',
-    lineHeight: 18,
-  },
-
-  emptyButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 7,
-    backgroundColor: '#159765',
-    paddingHorizontal: 17,
-    paddingVertical: 11,
-    borderRadius: 12,
-    marginTop: 15,
-  },
-
-  emptyButtonText: {
-    fontSize: 11,
-    fontWeight: '800',
-    color: '#FFFFFF',
-  },
-
-  // Monthly Budget
-  budgetCaption: {
-    fontSize: 10,
-    color: '#89968E',
-    fontWeight: '700',
-  },
-
-  budgetCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 22,
-    padding: 19,
-    borderWidth: 1,
-    borderColor: '#EAF1EC',
-    elevation: 3,
-    shadowColor: '#18392B',
-    shadowOpacity: 0.04,
-    shadowRadius: 9,
-    shadowOffset: { width: 0, height: 3 },
-  },
-
-  budgetTop: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 17,
-  },
-
-  budgetLabel: {
-    fontSize: 11,
-    color: '#89968E',
-    marginBottom: 5,
-  },
-
-  budgetAmount: {
-    fontSize: 21,
-    fontWeight: '900',
-    color: '#18392B',
-  },
-
-  budgetPercentage: {
-    width: 53,
-    height: 53,
     borderRadius: 17,
-    backgroundColor: '#E5F7ED',
-    justifyContent: 'center',
+    padding: 14,
+    marginBottom: 23,
+    elevation: 2,
+  },
+  overallSummaryIcon: {
+    width: 42,
+    height: 42,
+    borderRadius: 13,
+    backgroundColor: '#E8F7EE',
     alignItems: 'center',
+    justifyContent: 'center',
   },
+  overallSummaryTextWrap: { flex: 1, marginLeft: 12, marginRight: 8 },
+  overallSummaryTitle: { color: '#18392B', fontSize: 13, fontWeight: '900' },
+  overallSummarySubtitle: { color: '#89968E', fontSize: 10, marginTop: 4 },
 
-  budgetPercentageText: {
-    fontSize: 14,
-    fontWeight: '900',
-    color: '#159765',
-  },
+  budgetCaption: { color: '#159765', fontSize: 10, fontWeight: '800' },
+  budgetCard: { backgroundColor: '#FFFFFF', borderRadius: 18, padding: 16, marginBottom: 8, elevation: 2 },
+  budgetTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  budgetLabel: { color: '#89968E', fontSize: 11, fontWeight: '600' },
+  budgetAmount: { color: '#18392B', fontSize: 22, fontWeight: '900', marginTop: 5 },
+  budgetPercentage: { width: 47, height: 47, borderRadius: 15, backgroundColor: '#E5F7ED', alignItems: 'center', justifyContent: 'center' },
+  budgetPercentageText: { color: '#159765', fontSize: 13, fontWeight: '900' },
+  progressTrack: { height: 9, backgroundColor: '#EAF0EC', borderRadius: 8, overflow: 'hidden', marginTop: 17 },
+  progressFill: { height: '100%', backgroundColor: '#159765', borderRadius: 8 },
+  progressWarning: { backgroundColor: '#E85C68' },
+  budgetBottom: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 },
+  budgetHint: { color: '#89968E', fontSize: 10, fontWeight: '600' },
+  quickActions: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  gap: 7,
+  marginBottom: 23,
+},
 
-  progressTrack: {
-    height: 10,
-    borderRadius: 10,
-    backgroundColor: '#EAF1EC',
-    overflow: 'hidden',
-  },
+actionItem: {
+  flex: 1,
+  minWidth: 0,
+  backgroundColor: '#FFFFFF',
+  borderRadius: 14,
+  paddingVertical: 12,
+  alignItems: 'center',
+  elevation: 1,
+},
 
-  progressFill: {
-    height: '100%',
-    borderRadius: 10,
-    backgroundColor: '#18B77A',
-  },
+actionText: {
+  color: '#18392B',
+  fontSize: compact ? 9 : 10,
+  fontWeight: '800',
+  marginTop: 8,
+  textAlign: 'center',
+},
 
-  progressWarning: {
-    backgroundColor: '#F16D76',
-  },
+actionDescription: {
+  color: '#89968E',
+  fontSize: 8,
+  marginTop: 3,
+  textAlign: 'center',
+},
 
-  budgetBottom: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 8,
-    marginTop: 12,
-  },
-
-  budgetHint: {
-    fontSize: 10,
-    color: '#89968E',
-  },
-
-  bottomSpace: {
-    height: 20,
-  },
-
+overallAction: {
+  width: 43,
+  height: 43,
+  borderRadius: 14,
+  backgroundColor: '#5976C8',
+  alignItems: 'center',
+  justifyContent: 'center',
+},
 });

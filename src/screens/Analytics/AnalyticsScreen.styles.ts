@@ -1,4 +1,8 @@
-import { StyleSheet } from 'react-native';
+
+import { StyleSheet, Dimensions } from 'react-native';
+
+const { width } = Dimensions.get('window');
+const compact = width < 360;
 
 export const styles = StyleSheet.create({
   container: {
@@ -6,11 +10,10 @@ export const styles = StyleSheet.create({
     backgroundColor: '#F3F8F5',
   },
 
-  // Fixed Header
   header: {
-    height: 90,
-    marginTop: 30,
-    marginHorizontal: 20,
+    height: 82,
+    marginTop: 35,
+    marginHorizontal: 18,
     position: 'relative',
     flexDirection: 'row',
     alignItems: 'center',
@@ -22,9 +25,9 @@ export const styles = StyleSheet.create({
   },
 
   scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 45,
+    paddingHorizontal: 18,
+    paddingTop: 12,
+    paddingBottom: 38,
   },
 
   backButton: {
@@ -40,8 +43,8 @@ export const styles = StyleSheet.create({
 
   headerText: {
     position: 'absolute',
-    left: 0,
-    right: 0,
+    left: 48,
+    right: 48,
     top: 0,
     bottom: 0,
     alignItems: 'center',
@@ -56,7 +59,7 @@ export const styles = StyleSheet.create({
   },
 
   subtitle: {
-    fontSize: 12,
+    fontSize: 11,
     color: '#84958A',
     marginTop: 3,
     textAlign: 'center',
@@ -72,12 +75,56 @@ export const styles = StyleSheet.create({
     zIndex: 2,
   },
 
-  // Balance Summary
+  // Month Selector
+  monthSelector: {
+    minHeight: 72,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginBottom: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: '#E6EFE9',
+    elevation: 2,
+  },
+
+  monthArrow: {
+    width: 42,
+    height: 42,
+    borderRadius: 13,
+    backgroundColor: '#E8F6ED',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  monthTextWrap: {
+    flex: 1,
+    alignItems: 'center',
+  },
+
+  monthCaption: {
+    color: '#8A9A90',
+    fontSize: 9,
+    fontWeight: '800',
+    letterSpacing: 1,
+  },
+
+  monthTitle: {
+    color: '#18392B',
+    fontSize: 17,
+    fontWeight: '900',
+    marginTop: 4,
+  },
+
+  // Monthly Summary
   summaryCard: {
     backgroundColor: '#126D4A',
     borderRadius: 23,
-    padding: 21,
-    marginBottom: 29,
+    padding: 20,
+    marginBottom: 25,
     elevation: 5,
   },
 
@@ -87,17 +134,22 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 
+  balanceTextWrap: {
+    flex: 1,
+    paddingRight: 8,
+  },
+
   summaryLabel: {
     color: '#C5E9D7',
-    fontSize: 11,
-    fontWeight: '700',
+    fontSize: 10,
+    fontWeight: '800',
     letterSpacing: 1,
   },
 
   balance: {
     color: '#FFFFFF',
-    fontSize: 30,
-    fontWeight: '800',
+    fontSize: compact ? 25 : 30,
+    fontWeight: '900',
     marginTop: 8,
   },
 
@@ -108,9 +160,9 @@ export const styles = StyleSheet.create({
   },
 
   walletIcon: {
-    width: 54,
-    height: 54,
-    borderRadius: 18,
+    width: 52,
+    height: 52,
+    borderRadius: 17,
     backgroundColor: '#FFFFFF25',
     alignItems: 'center',
     justifyContent: 'center',
@@ -119,7 +171,7 @@ export const styles = StyleSheet.create({
   summaryDivider: {
     height: 1,
     backgroundColor: '#FFFFFF35',
-    marginVertical: 20,
+    marginVertical: 18,
   },
 
   summaryRow: {
@@ -153,50 +205,50 @@ export const styles = StyleSheet.create({
 
   summarySmall: {
     color: '#C5E9D7',
-    fontSize: 11,
+    fontSize: 10,
     marginBottom: 5,
   },
 
   summaryValue: {
     color: '#FFFFFF',
-    fontSize: 17,
+    fontSize: compact ? 14 : 17,
     fontWeight: '800',
   },
 
   verticalLine: {
     width: 1,
-    height: 60,
+    height: 58,
     backgroundColor: '#FFFFFF35',
-    marginHorizontal: 15,
+    marginHorizontal: 13,
   },
 
   // Section Heading
   sectionHeading: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 14,
+    marginBottom: 12,
     marginTop: 3,
   },
 
   sectionIcon: {
-    width: 41,
-    height: 41,
+    width: 40,
+    height: 40,
     borderRadius: 13,
     backgroundColor: '#E2F4E9',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: 11,
   },
 
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '800',
+    fontWeight: '900',
     color: '#18392B',
   },
 
   sectionSubtitle: {
     color: '#8A9A90',
-    fontSize: 11,
+    fontSize: 10,
     marginTop: 3,
   },
 
@@ -204,8 +256,8 @@ export const styles = StyleSheet.create({
   graphCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 22,
-    padding: 17,
-    marginBottom: 27,
+    padding: 16,
+    marginBottom: 24,
     borderWidth: 1,
     borderColor: '#E7EFE9',
     elevation: 3,
@@ -217,20 +269,25 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
+  graphHeaderText: {
+    flex: 1,
+    paddingRight: 8,
+  },
+
   graphTitle: {
-    fontSize: 17,
-    fontWeight: '800',
+    fontSize: 16,
+    fontWeight: '900',
     color: '#18392B',
   },
 
   graphSubtitle: {
-    fontSize: 11,
+    fontSize: 10,
     color: '#8A9A90',
     marginTop: 4,
   },
 
   graphBadge: {
-    paddingHorizontal: 11,
+    paddingHorizontal: 10,
     paddingVertical: 7,
     borderRadius: 9,
     backgroundColor: '#E8F6ED',
@@ -238,30 +295,30 @@ export const styles = StyleSheet.create({
 
   graphBadgeText: {
     fontSize: 9,
-    fontWeight: '800',
+    fontWeight: '900',
     color: '#159765',
-    letterSpacing: 0.7,
+    letterSpacing: 0.6,
   },
 
   graphDivider: {
     height: 1,
     backgroundColor: '#EDF2EE',
-    marginVertical: 17,
+    marginVertical: 15,
   },
 
   graphTotal: {
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 7,
   },
 
   graphTotalLabel: {
-    fontSize: 11,
+    fontSize: 10,
     color: '#829188',
   },
 
   graphTotalAmount: {
-    fontSize: 24,
-    fontWeight: '800',
+    fontSize: 23,
+    fontWeight: '900',
     color: '#18392B',
     marginTop: 4,
   },
@@ -270,7 +327,7 @@ export const styles = StyleSheet.create({
     fontSize: 10,
     color: '#98A69D',
     textAlign: 'center',
-    marginTop: 13,
+    marginTop: 9,
   },
 
   // Donut Chart
@@ -280,7 +337,7 @@ export const styles = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: 12,
+    marginVertical: 8,
   },
 
   donutCenter: {
@@ -294,17 +351,17 @@ export const styles = StyleSheet.create({
   },
 
   donutCenterLabel: {
-    fontSize: 10,
+    fontSize: 9,
     color: '#8A9A90',
-    fontWeight: '700',
-    letterSpacing: 1,
+    fontWeight: '800',
+    letterSpacing: 0.7,
   },
 
   donutCenterAmount: {
-    fontSize: 22,
+    fontSize: compact ? 17 : 20,
     fontWeight: '900',
     color: '#18392B',
-    marginTop: 6,
+    marginTop: 5,
   },
 
   donutCenterCaption: {
@@ -317,44 +374,45 @@ export const styles = StyleSheet.create({
   chartCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 21,
-    padding: 18,
-    marginBottom: 25,
+    padding: 17,
+    marginBottom: 22,
     borderWidth: 1,
     borderColor: '#E8EFEA',
     elevation: 2,
   },
 
   totalHeader: {
-    marginBottom: 18,
+    marginBottom: 17,
   },
 
   totalLabel: {
     color: '#89978F',
-    fontSize: 11,
+    fontSize: 10,
   },
 
   totalAmount: {
     color: '#18392B',
-    fontSize: 23,
-    fontWeight: '800',
+    fontSize: 22,
+    fontWeight: '900',
     marginTop: 5,
   },
 
   categoryBlock: {
-    marginBottom: 19,
+    marginBottom: 18,
   },
 
   legendRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 9,
   },
 
   legendLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
+    paddingRight: 8,
   },
 
   legendRight: {
@@ -362,26 +420,26 @@ export const styles = StyleSheet.create({
   },
 
   colorDot: {
-    width: 11,
-    height: 11,
-    borderRadius: 6,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
     marginRight: 9,
   },
 
   categoryName: {
     color: '#31483B',
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '700',
   },
 
   categoryAmount: {
     color: '#18392B',
-    fontSize: 13,
-    fontWeight: '800',
+    fontSize: 12,
+    fontWeight: '900',
   },
 
   progressTrack: {
-    height: 9,
+    height: 8,
     backgroundColor: '#EDF3EF',
     borderRadius: 10,
     overflow: 'hidden',
@@ -393,43 +451,43 @@ export const styles = StyleSheet.create({
   },
 
   percentage: {
-    fontSize: 10,
+    fontSize: 9,
     color: '#94A198',
-    marginTop: 5,
+    marginTop: 4,
   },
 
   // Empty State
   empty: {
-    minHeight: 170,
+    minHeight: 165,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    padding: 18,
   },
 
   emptyIcon: {
-    width: 65,
-    height: 65,
-    borderRadius: 22,
+    width: 62,
+    height: 62,
+    borderRadius: 21,
     backgroundColor: '#E7F5EC',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 13,
+    marginBottom: 10,
   },
 
   emptyTitle: {
     color: '#18392B',
-    fontSize: 15,
-    fontWeight: '800',
-    marginTop: 10,
+    fontSize: 14,
+    fontWeight: '900',
+    marginTop: 8,
     textAlign: 'center',
   },
 
   emptyText: {
     color: '#89978F',
-    fontSize: 11,
+    fontSize: 10,
     textAlign: 'center',
-    lineHeight: 18,
-    marginTop: 7,
+    lineHeight: 17,
+    marginTop: 6,
   },
 
   // Spending Insight
@@ -438,8 +496,8 @@ export const styles = StyleSheet.create({
     alignItems: 'flex-start',
     backgroundColor: '#E8F5EC',
     borderRadius: 18,
-    padding: 17,
-    marginBottom: 22,
+    padding: 16,
+    marginBottom: 18,
   },
 
   insightIcon: {
@@ -449,7 +507,7 @@ export const styles = StyleSheet.create({
     backgroundColor: '#D1EEDC',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: 11,
   },
 
   insightContent: {
@@ -458,22 +516,21 @@ export const styles = StyleSheet.create({
 
   noteTitle: {
     color: '#176744',
-    fontSize: 14,
-    fontWeight: '800',
-    marginBottom: 6,
+    fontSize: 13,
+    fontWeight: '900',
+    marginBottom: 5,
   },
 
   noteText: {
     color: '#557365',
-    fontSize: 11,
-    lineHeight: 18,
+    fontSize: 10,
+    lineHeight: 17,
   },
 
-  // Footer
   footerText: {
     color: '#A0ACA4',
-    fontSize: 10,
+    fontSize: 9,
     textAlign: 'center',
-    marginTop: 5,
+    marginTop: 3,
   },
 });

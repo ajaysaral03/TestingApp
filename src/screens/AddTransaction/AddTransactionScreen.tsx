@@ -40,6 +40,7 @@ import {
   GraduationCap,
   Clapperboard,
   CircleHelp,
+  CreditCard,
 } from 'lucide-react-native';
 
 import SweetAlert from '../../components/SweetAlert/SweetAlert';
@@ -68,6 +69,7 @@ const incomeCategories: CategoryItem[] = [
 
 const expenseCategories: CategoryItem[] = [
   {name: 'Food', icon: Utensils},
+  {name: 'Emi', icon: CreditCard},
   {name: 'Travel', icon: Car},
   {name: 'Shopping', icon: ShoppingBag},
   {name: 'Bills', icon: Receipt},
