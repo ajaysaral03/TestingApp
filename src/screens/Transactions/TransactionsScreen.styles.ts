@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
   // HEADER
   header: {
     minHeight: 80,
-    marginTop: 37,
+    marginTop: 0,
     marginHorizontal: 18,
     marginBottom: 8,
     position: 'relative',
@@ -168,6 +168,9 @@ export const styles = StyleSheet.create({
 
   // LIST
   listContent: {
+    width: '100%',
+    maxWidth: 600,
+    alignSelf: 'center',
     paddingHorizontal: 18,
     paddingTop: 8,
     paddingBottom: 35,
@@ -369,6 +372,28 @@ hint: {
     fontSize: 13,
     fontWeight: '900',
     color: '#159765',
+  },
+
+  exportPdfButton: {
+    minHeight: 44,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: '#159765',
+    borderRadius: 13,
+    marginBottom: 14,
+    paddingHorizontal: 16,
+  },
+
+  exportPdfButtonDisabled: {
+    opacity: 0.6,
+  },
+
+  exportPdfButtonText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '800',
   },
 
   // TRANSACTION CARD

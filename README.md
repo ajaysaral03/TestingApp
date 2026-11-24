@@ -32,6 +32,12 @@ npm run android
 yarn android
 ```
 
+`npm run android` forwards the PC's local Ollama API to the USB-connected
+Android device. Install and start Ollama on the PC, then run
+`ollama pull llama3.2:3b` before chatting. On the Assistant screen, the
+microphone button dictates a message, the speaker button reads a reply aloud,
+and **Voice** starts hands-free voice-agent mode.
+
 ### iOS
 
 For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).

@@ -27,10 +27,16 @@ import {
   ActivityIndicator,
 
 } from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 import { useFocusEffect } from '@react-navigation/native';
 
 import LinearGradient from 'react-native-linear-gradient';
+import {
+  BannerAd,
+  BannerAdSize,
+  TestIds,
+} from 'react-native-google-mobile-ads';
 
 import {
 
@@ -75,7 +81,7 @@ import {
   ReceiptText,
 
   CreditCard,
-
+  Sparkles,
 } from 'lucide-react-native';
 
 import SweetAlert from '../../components/SweetAlert/SweetAlert';
@@ -105,6 +111,10 @@ import { getProfile } from '../../storage/profileStorage';
 import { styles } from './HomeScreen.styles';
 
 const DEFAULT_MONTHLY_BUDGET = 30000;
+
+const BANNER_AD_UNIT_ID = __DEV__
+  ? TestIds.BANNER
+  : 'ca-app-pub-3767029555228475/8984208536';
 
 // Category-wise icons
 
@@ -878,6 +888,16 @@ export default function HomeScreen({ navigation }: any) {
 
             </View>
 
+       {/* Banner Ad */}
+        <View style={{ alignItems: 'center', marginVertical: 12 }}>
+              <BannerAd
+                unitId={BANNER_AD_UNIT_ID}
+                size={BannerAdSize.BANNER}
+                onAdLoaded={() => console.log('Ad loaded')}
+                onAdFailedToLoad={error => console.log('Ad failed:', error)}
+              />
+            </View>
+
             {/* Quick Actions */}
 
             <View style={styles.sectionHeader}>
@@ -1048,6 +1068,23 @@ export default function HomeScreen({ navigation }: any) {
               </TouchableOpacity>
 
             </View>
+
+            <TouchableOpacity
+              style={styles.assistantCard}
+              onPress={() => navigation.navigate('Assistant')}
+              activeOpacity={0.8}
+            >
+              <View style={styles.assistantIcon}>
+                <Sparkles size={21} color="#159765" />
+              </View>
+              <View style={styles.assistantTextWrap}>
+                <Text style={styles.assistantTitle}>Ask AI Assistant</Text>
+                <Text style={styles.assistantSubtitle}>
+                  Get insights about your money
+                </Text>
+              </View>
+              <ChevronRight size={20} color="#159765" />
+            </TouchableOpacity>
 
             {/* Recent Transactions */}
 
@@ -1417,15 +1454,13 @@ export default function HomeScreen({ navigation }: any) {
 
       {/* Fixed Footer */}
 
-      <Footer
-
-        activeTab="Home"
-
-        onTabPress={handleTabPress}
-
-        onAddPress={() => handleAddTransaction()}
-
-      />
+      <SafeAreaView edges={['bottom']} style={styles.footerSafeArea}>
+        <Footer
+          activeTab="Home"
+          onTabPress={handleTabPress}
+          onAddPress={() => handleAddTransaction()}
+        />
+      </SafeAreaView>
 
       {/* Logout Confirmation */}
 
@@ -1446,7 +1481,6 @@ export default function HomeScreen({ navigation }: any) {
         onConfirm={confirmLogout}
 
         onCancel={() => setShowLogoutAlert(false)}
-
       />
 
     </View>

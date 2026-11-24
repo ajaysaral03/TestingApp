@@ -4,11 +4,12 @@ import {
   View,
   Text,
   ScrollView,
-  SafeAreaView,
   StatusBar,
   TouchableOpacity,
   ActivityIndicator,
+  useWindowDimensions,
 } from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Svg, { Circle } from 'react-native-svg';
@@ -92,6 +93,8 @@ const categoryColors = [
 ];
 
 const AnalyticsScreen = () => {
+  const {width: windowWidth} = useWindowDimensions();
+  const donutSize = Math.min(220, Math.max(160, windowWidth - 70));
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
@@ -470,8 +473,8 @@ const AnalyticsScreen = () => {
 
               <View style={styles.donutContainer}>
                 <Svg
-                  width={220}
-                  height={220}
+                  width={donutSize}
+                  height={donutSize}
                   viewBox="0 0 200 200"
                 >
                   <Circle
@@ -639,6 +642,7 @@ const AnalyticsScreen = () => {
                   ? `${highestCategory.category} is your highest expense category in ${selectedMonthLabel}. You spent ${formatAmount(highestCategory.amount)} (${highestCategory.percentage.toFixed(1)}% of monthly expenses) in this category.`
                   : `Your spending insights for ${selectedMonthLabel} will appear after adding expenses.`}
             </Text>
+
           </View>
         </View>
 

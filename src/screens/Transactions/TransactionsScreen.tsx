@@ -5,6 +5,8 @@ import React, {useCallback, useMemo, useState} from 'react';
 
 
 import DateTimePicker from '@react-native-community/datetimepicker';
+import {generatePDF} from 'react-native-html-to-pdf';
+import Share from 'react-native-share';
 
 
 
@@ -18,8 +20,6 @@ import {
 
   TouchableOpacity,
 
-  SafeAreaView,
-
   StatusBar,
 
   ActivityIndicator,
@@ -31,8 +31,10 @@ import {
   TextInput,
 
   ScrollView,
-
+  NativeModules,
+  Platform,
 } from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 
 
@@ -113,7 +115,7 @@ import {
   ChevronRight,
 
   CalendarDays,
-
+  Download,
 } from 'lucide-react-native';
 
 
@@ -134,9 +136,8 @@ import {
 
 } from '../../storage/transactionStorage';
 
-
-
 import {getCurrentUser} from '../../storage/authStorage';
+import {getProfile} from '../../storage/profileStorage';
 
 
 
@@ -435,6 +436,8 @@ export default function TransactionsScreen() {
 
 
   const [saving, setSaving] = useState(false);
+
+  const [exportingPdf, setExportingPdf] = useState(false);
 
 
 
@@ -1777,6 +1780,231 @@ export default function TransactionsScreen() {
 
 
 
+  const handleExportPdf = async () => {
+    if (filteredItems.length === 0) {
+      showSweetAlert(
+        'No Transactions',
+        'There are no transactions matching the selected filters.',
+        'warning',
+      );
+      return;
+    }
+
+    setExportingPdf(true);
+
+    try {
+      const escapeHtml = (value: unknown) =>
+        String(value ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+
+      const income = filteredItems
+        .filter(item => item.type === 'income')
+        .reduce((total, item) => total + Number(item.amount || 0), 0);
+      const expense = filteredItems
+        .filter(item => item.type === 'expense')
+        .reduce((total, item) => total + Number(item.amount || 0), 0);
+      const invoiceNumber = `INV-${new Date().toISOString().replace(/[-:.TZ]/g, '').slice(0, 12)}`;
+      const currentMobile = await getCurrentUser();
+      const profile = currentMobile ? await getProfile(currentMobile) : null;
+      const customerName = profile?.name?.trim() || 'Valued Customer';
+      const customerMobile = currentMobile ? `+91 ${currentMobile}` : '-';
+      const dateLabel =
+        selectedDateType === 'all' ? 'All time' : dateFilterLabel;
+      const filterDetails = [
+        `Date: ${dateLabel}`,
+        selectedType !== 'all'
+          ? `Type: ${selectedType === 'income' ? 'Income' : 'Expense'}`
+          : '',
+        selectedCategory !== 'all' ? `Category: ${selectedCategory}` : '',
+        searchQuery.trim() ? `Search: ${searchQuery.trim()}` : '',
+      ]
+        .filter(Boolean)
+        .map(escapeHtml)
+        .join(' &nbsp; | &nbsp; ');
+
+      const rows = filteredItems
+        .map(
+          (item, index) => `
+            <tr>
+              <td class="center">${index + 1}</td>
+              <td>${escapeHtml(formatDate(item.date))}</td>
+              <td>
+                <strong>${escapeHtml(item.category || 'Other')}</strong>
+                <div class="description">${escapeHtml(item.description || item.title || '-')}</div>
+              </td>
+              <td class="center">${item.type === 'income' ? 'Income' : 'Expense'}</td>
+              <td class="amount">${escapeHtml(
+                `${item.type === 'expense' ? '-' : ''}₹${Number(item.amount || 0).toLocaleString('en-IN', {
+                  maximumFractionDigits: 2,
+                })}`,
+              )}</td>
+            </tr>`,
+        )
+        .join('');
+
+      const html = `
+        <!doctype html>
+        <html>
+          <head>
+            <meta charset="utf-8" />
+            <style>
+              @page { size: A4; margin: 14mm; }
+              body { font-family: Arial, sans-serif; color: #18392B; margin: 0; }
+              .invoice { border: 1px solid #D8E5DD; min-height: 260mm; }
+              .header { display: flex; justify-content: space-between; align-items: flex-start; background: #159765; color: #fff; padding: 22px 24px; }
+              .brand { font-size: 24px; font-weight: 700; }
+              .tagline { font-size: 11px; margin-top: 5px; opacity: 0.9; }
+              .invoice-title { text-align: right; }
+              .invoice-title h1 { margin: 0 0 5px; font-size: 30px; letter-spacing: 2px; }
+              .invoice-title div { font-size: 11px; }
+              .meta { display: flex; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid #E2ECE6; }
+              .meta-block { width: 48%; }
+              .meta-label { color: #7A8B81; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 7px; }
+              .customer { font-size: 14px; font-weight: 700; }
+              .mobile, .filters { color: #66766D; font-size: 11px; margin-top: 4px; }
+              .details { text-align: right; font-size: 12px; }
+              .details strong { display: inline-block; min-width: 62px; }
+              .table-wrap { padding: 18px 24px 10px; }
+              table { width: 100%; border-collapse: collapse; font-size: 10px; }
+              th { background: #EEF6F1; color: #3E604F; text-align: left; border-bottom: 2px solid #159765; }
+              th, td { padding: 9px 7px; }
+              td { border-bottom: 1px solid #E7EEE9; }
+              tr { page-break-inside: avoid; }
+              .center { text-align: center; }
+              .amount { text-align: right; white-space: nowrap; }
+              .description { color: #74847C; margin-top: 3px; }
+              .totals { display: flex; justify-content: flex-end; padding: 10px 24px 18px; }
+              .totals-box { width: 42%; border: 1px solid #E0E9E3; }
+              .total-row { display: flex; justify-content: space-between; padding: 9px 12px; font-size: 12px; border-bottom: 1px solid #E7EEE9; }
+              .total-row:last-child { border-bottom: 0; background: #159765; color: #fff; font-size: 14px; font-weight: 700; }
+              .footer { margin: 12px 24px 20px; padding-top: 12px; border-top: 1px solid #E2ECE6; text-align: center; color: #7A8B81; font-size: 10px; }
+            </style>
+          </head>
+          <body>
+            <div class="invoice">
+              <div class="header">
+                <div>
+                  <div class="brand">Expense Tracker</div>
+                  <div class="tagline">Income &amp; Expense Invoice</div>
+                </div>
+                <div class="invoice-title">
+                  <h1>INVOICE</h1>
+                  <div>${escapeHtml(invoiceNumber)}</div>
+                </div>
+              </div>
+              <div class="meta">
+                <div class="meta-block">
+                  <div class="meta-label">Bill To</div>
+                  <div class="customer">${escapeHtml(customerName)}</div>
+                  <div class="mobile">${escapeHtml(customerMobile)}</div>
+                  <div class="filters">${filterDetails}</div>
+                </div>
+                <div class="details">
+                  <div><strong>Invoice Date:</strong> ${escapeHtml(new Date().toLocaleDateString('en-IN'))}</div>
+                  <div style="margin-top:6px"><strong>Period:</strong> ${escapeHtml(dateLabel)}</div>
+                  <div style="margin-top:6px"><strong>Entries:</strong> ${filteredItems.length}</div>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th class="center" style="width:8%">#</th>
+                      <th style="width:18%">Date</th>
+                      <th style="width:42%">Description</th>
+                      <th class="center" style="width:14%">Type</th>
+                      <th class="amount" style="width:18%">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>${rows}</tbody>
+                </table>
+              </div>
+              <div class="totals">
+                <div class="totals-box">
+                  <div class="total-row"><span>Total Income</span><strong>₹${income.toLocaleString('en-IN', {maximumFractionDigits: 2})}</strong></div>
+                  <div class="total-row"><span>Total Expenses</span><strong>₹${expense.toLocaleString('en-IN', {maximumFractionDigits: 2})}</strong></div>
+                  <div class="total-row"><span>Net Amount</span><strong>₹${(income - expense).toLocaleString('en-IN', {maximumFractionDigits: 2})}</strong></div>
+                </div>
+              </div>
+              <div class="footer">This is a system-generated expense invoice.</div>
+            </div>
+          </body>
+        </html>`;
+
+      const fileName = `invoice_${new Date().toISOString().replace(/[:.]/g, '-')}`;
+      let pdf;
+
+      try {
+        pdf = await generatePDF({
+          html,
+          fileName,
+          directory: 'Documents',
+          shouldPrintBackgrounds: true,
+        });
+      } catch (documentsError) {
+        console.log(
+          'Documents PDF export failed; retrying in app cache:',
+          documentsError,
+        );
+        pdf = await generatePDF({
+          html,
+          fileName,
+          shouldPrintBackgrounds: true,
+        });
+      }
+
+      if (!pdf.filePath) {
+        throw new Error('The PDF file could not be created.');
+      }
+
+      if (Platform.OS === 'android' && NativeModules.InvoicePdfSaver) {
+        await NativeModules.InvoicePdfSaver.saveToDownloads(
+          pdf.filePath,
+          `${fileName}.pdf`,
+        );
+        showSweetAlert(
+          'Invoice Downloaded',
+          'Your invoice PDF has been saved in the Downloads folder.',
+          'success',
+        );
+        setExportingPdf(false);
+        return;
+      }
+
+      await Share.open({
+        url: pdf.filePath.startsWith('file://')
+          ? pdf.filePath
+          : `file://${pdf.filePath}`,
+        type: 'application/pdf',
+        title: 'Invoice',
+        subject: 'Expense Invoice',
+        saveToFiles: true,
+        failOnCancel: false,
+      });
+
+      showSweetAlert(
+        'PDF Ready',
+        'Your invoice PDF is ready to save or share.',
+        'success',
+      );
+    } catch (error) {
+      console.log('Transaction PDF export error:', error);
+      showSweetAlert(
+        'PDF Export Failed',
+        error instanceof Error
+          ? error.message
+          : 'Could not create or share the PDF. Please try again.',
+        'error',
+      );
+    } finally {
+      setExportingPdf(false);
+    }
+  };
+
   // TRANSACTION CARD
 
   const renderTransaction = ({
@@ -2022,11 +2250,26 @@ export default function TransactionsScreen() {
           </Text>
 
         </View>
-
       </View>
 
+      <TouchableOpacity
+        style={[
+          styles.exportPdfButton,
+          (exportingPdf || loading) && styles.exportPdfButtonDisabled,
+        ]}
+        onPress={handleExportPdf}
+        disabled={exportingPdf || loading}
+        activeOpacity={0.75}>
+        {exportingPdf ? (
+          <ActivityIndicator size="small" color="#FFFFFF" />
+        ) : (
+          <Download size={17} color="#FFFFFF" />
+        )}
+        <Text style={styles.exportPdfButtonText}>
+          {exportingPdf ? 'Preparing Invoice...' : 'Download Invoice PDF'}
+        </Text>
+      </TouchableOpacity>
     </View>
-
   );
 
 
@@ -3782,5 +4025,4 @@ export default function TransactionsScreen() {
   );
 
 }
-
 

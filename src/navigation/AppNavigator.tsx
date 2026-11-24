@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -12,6 +11,7 @@ import TransactionsScreen from '../screens/Transactions/TransactionsScreen';
 import AnalyticsScreen from '../screens/Analytics/AnalyticsScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
 import OverallSummaryScreen from '../screens/OverallSummary/OverallSummaryScreen';
+import AssistantScreen from '../screens/Assistant/AssistantScreen';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -23,6 +23,7 @@ export type RootStackParamList = {
   Analytics: undefined;
   Profile: undefined;
   OverallSummary: undefined;
+  Assistant: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -37,19 +38,14 @@ const AppNavigator = () => {
     >
       <Stack.Screen name="Splash" component={SplashScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen
-        name="OtpVerification"
-        component={OtpVerificationScreen}
-      />
+      <Stack.Screen name="OtpVerification" component={OtpVerificationScreen} />
       <Stack.Screen name="Home" component={HomeScreen} />
-      <Stack.Screen
-        name="AddTransaction"
-        component={AddTransactionScreen}
-      />
+      <Stack.Screen name="AddTransaction" component={AddTransactionScreen} />
       <Stack.Screen name="Transactions" component={TransactionsScreen} />
       <Stack.Screen name="Analytics" component={AnalyticsScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="OverallSummary" component={OverallSummaryScreen} />
+      <Stack.Screen name="Assistant" component={AssistantScreen} />
     </Stack.Navigator>
   );
 };

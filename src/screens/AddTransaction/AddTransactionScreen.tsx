@@ -13,6 +13,7 @@ import {
   Platform,
   ActivityIndicator,
 } from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
 
@@ -386,9 +387,10 @@ export default function AddTransactionScreen({
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
 
       <StatusBar
         barStyle="dark-content"
@@ -770,6 +772,7 @@ export default function AddTransactionScreen({
         onCancel={() => setAlertVisible(false)}
       />
 
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }

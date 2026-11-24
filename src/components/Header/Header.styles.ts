@@ -9,6 +9,8 @@ export const styles = StyleSheet.create({
 
   container: {
     width: '100%',
+    maxWidth: 600,
+    alignSelf: 'center',
     // minHeight: 6,
     flexDirection: 'row',
     alignItems: 'center',

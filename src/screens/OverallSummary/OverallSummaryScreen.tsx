@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {useFocusEffect} from '@react-navigation/native';
 import {
   ArrowLeft,
@@ -197,7 +198,7 @@ export default function OverallSummaryScreen({navigation}: any) {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <StatusBar barStyle="dark-content" backgroundColor="#F3F8F5" />
 
       {/* CENTERED HEADER */}
@@ -398,6 +399,6 @@ export default function OverallSummaryScreen({navigation}: any) {
           </View>
         </ScrollView>
       )}
-    </View>
+    </SafeAreaView>
   );
 }

@@ -7,6 +7,7 @@ import {
   Animated,
   StatusBar,
 } from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 import {
   Wallet,
@@ -49,7 +50,7 @@ useEffect(() => {
   } = useSplashAnimation();
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
 
       <StatusBar
         barStyle="dark-content"
@@ -264,7 +265,7 @@ useEffect(() => {
 
       </Animated.View>
 
-    </View>
+    </SafeAreaView>
   );
 };
 

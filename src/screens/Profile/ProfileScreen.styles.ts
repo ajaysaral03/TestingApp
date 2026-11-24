@@ -21,6 +21,9 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
   },
   scrollContent: {
+    width: '100%',
+    maxWidth: 600,
+    alignSelf: 'center',
     paddingHorizontal: 18,
     paddingTop: 6,
     paddingBottom: 40,

@@ -3,6 +3,9 @@ import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
   container: {
+    width: '100%',
+    maxWidth: 600,
+    alignSelf: 'center',
     minHeight: 78,
     backgroundColor: '#FFFFFF',
     flexDirection: 'row',

@@ -1,4 +1,3 @@
-
 export type TransactionType = 'income' | 'expense';
 
 export type RootStackParamList = {
@@ -18,4 +17,5 @@ export type RootStackParamList = {
   Transactions: undefined;
   Analytics: undefined;
   Profile: undefined;
+  Assistant: undefined;
 };

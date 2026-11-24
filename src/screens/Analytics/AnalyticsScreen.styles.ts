@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
 
   header: {
     height: 82,
-    marginTop: 35,
+    marginTop: 0,
     marginHorizontal: 18,
     position: 'relative',
     flexDirection: 'row',
@@ -25,6 +25,9 @@ export const styles = StyleSheet.create({
   },
 
   scrollContent: {
+    width: '100%',
+    maxWidth: 600,
+    alignSelf: 'center',
     paddingHorizontal: 18,
     paddingTop: 12,
     paddingBottom: 38,
@@ -332,8 +335,9 @@ export const styles = StyleSheet.create({
 
   // Donut Chart
   donutContainer: {
-    width: 220,
-    height: 220,
+    width: '100%',
+    aspectRatio: 1,
+    maxWidth: 220,
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',

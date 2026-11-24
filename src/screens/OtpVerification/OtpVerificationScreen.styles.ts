@@ -1,20 +1,12 @@
 
-import { StyleSheet, Dimensions, Platform } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
 
 import { COLORS } from '../../constants/colors';
 import { FONTS } from '../../constants/fonts';
 
-const { width } = Dimensions.get('window');
-
 const SIDE_PADDING = 23;
 const CARD_PADDING = 20;
 const OTP_GAP = 10;
-
-const OTP_WIDTH =
-  (width -
-    SIDE_PADDING * 2 -
-    CARD_PADDING * 2 -
-    OTP_GAP * 3) / 4;
 
 export const styles = StyleSheet.create({
   container: {
@@ -24,6 +16,9 @@ export const styles = StyleSheet.create({
   },
 
   scrollContent: {
+    width: '100%',
+    maxWidth: 560,
+    alignSelf: 'center',
     flexGrow: 1,
     paddingHorizontal: SIDE_PADDING,
     paddingBottom: 25,
@@ -339,7 +334,8 @@ export const styles = StyleSheet.create({
   },
 
   otpInput: {
-    width: OTP_WIDTH,
+    flex: 1,
+    minWidth: 0,
     height: 62,
     borderRadius: 16,
     backgroundColor: '#F7FAF8',

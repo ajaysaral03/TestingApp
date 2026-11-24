@@ -1,7 +1,5 @@
 
-import { StyleSheet, Dimensions } from 'react-native';
-
-const { width } = Dimensions.get('window');
+import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
   overlay: {
@@ -13,7 +11,8 @@ export const styles = StyleSheet.create({
   },
 
   dialog: {
-    width: Math.min(width - 50, 370),
+    width: '100%',
+    maxWidth: 370,
     backgroundColor: '#FFFFFF',
     borderRadius: 27,
     paddingHorizontal: 23,

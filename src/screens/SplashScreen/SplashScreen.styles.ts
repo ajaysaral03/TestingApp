@@ -14,6 +14,9 @@ export const styles = StyleSheet.create({
 
   mainContent: {
     flex: 1,
+    width: '100%',
+    maxWidth: 560,
+    alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 18,

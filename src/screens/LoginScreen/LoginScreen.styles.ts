@@ -12,6 +12,9 @@ export const styles = StyleSheet.create({
   },
 
   scrollContent: {
+    width: '100%',
+    maxWidth: 560,
+    alignSelf: 'center',
     flexGrow: 1,
     paddingHorizontal: 22,
     paddingTop: 35,

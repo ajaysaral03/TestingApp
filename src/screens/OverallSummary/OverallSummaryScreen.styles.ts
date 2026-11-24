@@ -15,7 +15,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 18,
     paddingTop: 10,
-    marginTop:45,
+    marginTop: 0,
     paddingBottom: 10,
   },
   headerSideButton: {
@@ -56,6 +56,9 @@ export const styles = StyleSheet.create({
 
   // CONTENT
   scrollContent: {
+    width: '100%',
+    maxWidth: 600,
+    alignSelf: 'center',
     paddingHorizontal: 18,
     paddingTop: 8,
     paddingBottom: 30,

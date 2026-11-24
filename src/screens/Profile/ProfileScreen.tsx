@@ -378,7 +378,7 @@ const ProfileScreen = ({navigation}: Props) => {
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <StatusBar backgroundColor="#F3F8F5" barStyle="dark-content" />
 
       <View style={styles.header}>

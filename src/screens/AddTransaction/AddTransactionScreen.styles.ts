@@ -14,6 +14,9 @@ export const styles = StyleSheet.create({
   },
 
   scrollContent: {
+    width: '100%',
+    maxWidth: 600,
+    alignSelf: 'center',
     paddingHorizontal: 21,
     paddingTop: 10,
     paddingBottom: 18,
@@ -21,6 +24,9 @@ export const styles = StyleSheet.create({
 
   // Fixed Header
   header: {
+    width: '100%',
+    maxWidth: 600,
+    alignSelf: 'center',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -29,7 +35,7 @@ export const styles = StyleSheet.create({
     paddingBottom: 15,
     backgroundColor: '#F4FAF6',
     minHeight: 76,
-    marginTop:35,
+    marginTop: 0,
   },
 
   backButton: {
